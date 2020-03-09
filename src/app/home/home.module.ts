@@ -9,8 +9,10 @@ import { HomeRoutingModule } from './home-routing.module';
 import { HomeComponent } from './home.component';
 import { QuoteService } from './quote.service';
 
+import { CatsModule } from '@app/cats/cats.module';
+
 @NgModule({
-  imports: [CommonModule, TranslateModule, CoreModule, SharedModule, Angulartics2Module, HomeRoutingModule],
+  imports: [CommonModule, TranslateModule, CoreModule, SharedModule, Angulartics2Module, HomeRoutingModule, CatsModule],
   declarations: [HomeComponent]
 })
 export class HomeModule {}
