@@ -1,0 +1,11 @@
+<div class="card">
+  <img class="card-img-top" [src]="cat" alt="Card image cap" />
+  <div class="card-body">
+    <!-- <p class="card-text">Is this the cat for you?</p> -->
+    <button (click)="this.getNewCat()">👍</button>
+
+    <button (click)="this.getNewCat()">👎</button>
+
+    <span style="float: right;">🐾 {{ currentVoteCount }} </span>
+  </div>
+</div>

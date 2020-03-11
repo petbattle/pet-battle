@@ -1,3 +1,18 @@
-<div class="container-fluid">
-  <app-votes></app-votes>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-4">
+      <!-- Current Top Cat 👑 -->
+      <div class="card">
+        <img class="card-img-top" [src]="cat" alt="Card image cap" />
+        <!-- <div class="card-body">
+        </div> -->
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-3" *ngFor="let cat of listOfCatCards">
+      <app-catcard></app-catcard>
+    </div>
+  </div>
 </div>

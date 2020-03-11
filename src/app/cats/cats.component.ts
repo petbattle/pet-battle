@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { environment } from '@env/environment';
+import { CatsService } from './cats.service';
 
 @Component({
   selector: 'app-cats',
@@ -8,9 +9,16 @@ import { environment } from '@env/environment';
   styleUrls: ['./cats.component.scss']
 })
 export class CatsComponent implements OnInit {
-  version: string | null = environment.version;
+  public cat: any;
+  public listOfCatCards = [1, 2, 3, 4];
+  private topCat: any;
 
-  constructor() {}
+  constructor(private catsService: CatsService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.catsService.getTopCat().subscribe(response => {
+      this.topCat = response[0].id;
+      this.cat = response[0].url;
+    });
+  }
 }
