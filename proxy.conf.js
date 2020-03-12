@@ -8,9 +8,11 @@ const HttpsProxyAgent = require('https-proxy-agent');
  */
 const proxyConfig = [
   {
-    context: '/api',
-    pathRewrite: { '^/api': '' },
-    target: 'https://api.chucknorris.io',
+    context: '/cats',
+    pathRewrite: {
+      '^/cats': '/cats'
+    },
+    target: 'http://cats-cats.apps.hivec.sandbox526.opentlc.com/',
     changeOrigin: true,
     secure: false
   }

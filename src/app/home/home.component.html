@@ -6,8 +6,48 @@
   </p>
 
   <div class="text-center">
-    <button type="button" class="btn btn-primary">Enter your cat 🐈</button>
+    <button type="button" class="btn btn-primary" (click)="open(content)">Enter your cat 🐈</button>
   </div>
 
   <app-cats></app-cats>
+
+  <ng-template #content let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">Add your cat 🐈</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <ng-container *ngIf="isImageSaved; else elseTemplate">
+        <img class="modal-img" [src]="cardImageBase64" />
+      </ng-container>
+      <ng-template #elseTemplate>
+        <img
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTT1GKgFHP_ILthMtROZlsHlELrNayJKsIwNm-br0IVWqZZvvBd"
+          class="modal-img"
+        />
+      </ng-template>
+    </div>
+    <div class="modal-footer">
+      <input type="file" (change)="fileChangeEvent($event)" class="fileInputProfile" />
+      <span>
+        <button type="button" class="btn btn-danger" (click)="removeImage()">Remove</button>
+        <!-- <button type="button" class="btn btn-light" (click)="modal.close('Close click')">Submit</button> -->
+        <button type="button" class="btn btn-light" (click)="submitNewCat()">Submit</button>
+        <span *ngIf="this.error">{{ error }}</span>
+      </span>
+    </div>
+  </ng-template>
+
+  <!-- <ng-template #content let-modal class="modal-md fade" id="myModal" role="dialog">
+    <label>Upload your cat 🐈</label>
+    {{ imageError }}
+    <div class="custom-file fileInputProfileWrap">
+      <div class="img-space">
+
+      </div>
+      <a class="btn btn-danger" (click)="removeImage()">Remove</a>
+    </div>
+  </ng-template> -->
 </div>

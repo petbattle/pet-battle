@@ -57,25 +57,25 @@ export class CatsService {
     );
   }
 
-  bumpCatVote(cat: any): Observable<any> {
-    return (
-      this.httpClient
-        // .cache()
-        .put('https://')
-        .pipe(
-          map((body: any) => {
-            return body;
-          }),
-          catchError(() => of({ id: '404', url: 'https://http.cat/404' }))
-        )
-    );
-  }
+  // bumpCatVote(cat: any): Observable<any> {
+  //   return (
+  //     this.httpClient
+  //       // .cache()
+  //       .put('https://')
+  //       .pipe(
+  //         map((body: any) => {
+  //           return body;
+  //         }),
+  //         catchError(() => of({ id: '404', url: 'https://http.cat/404' }))
+  //       )
+  //   );
+  // }
 
   createNewCat(cat: any): Observable<any> {
     return (
       this.httpClient
         // .cache()
-        .post('')
+        .post('/cats', cat)
         .pipe(
           map((body: any) => {
             return body;

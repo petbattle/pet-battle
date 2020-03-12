@@ -17,8 +17,9 @@ export class CatsComponent implements OnInit {
 
   ngOnInit() {
     this.catsService.getTopCat().subscribe(response => {
-      this.topCat = response[0].id;
-      this.cat = response[0].url;
+      // todo - fix this when api come along
+      // this.topCat = response[0].id;
+      // this.cat = response[0].url;
     });
   }
 }
