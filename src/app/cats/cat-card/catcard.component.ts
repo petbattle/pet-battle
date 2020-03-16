@@ -7,25 +7,37 @@ import { CatsService } from '../cats.service';
   styleUrls: ['./catcard.component.scss']
 })
 export class CatcardComponent implements OnInit {
-  public cat: string;
+  public image: string;
   public currentVoteCount = 0;
   public spinner = true;
+  public compOver = false;
+  private catId: string;
+
   constructor(private catsService: CatsService) {}
 
   ngOnInit() {
     this.catsService.getAllCats().subscribe(response => {
       const randoInt = Math.floor(Math.random() * (response.length + 1));
-      this.cat = response[randoInt].image;
+      this.image = response[randoInt].image;
       this.spinner = false;
       this.currentVoteCount = response[randoInt].count;
+      this.catId = response[randoInt].id;
     });
   }
 
-  getNewCat(upvote: boolean) {
-    upvote ? this.currentVoteCount++ : (this.currentVoteCount = this.currentVoteCount);
+  getNewCat(vote: boolean) {
+    const body = { image: this.image, id: this.catId, count: this.currentVoteCount, vote };
+    vote ? this.currentVoteCount++ : (this.currentVoteCount = this.currentVoteCount);
+    this.catsService.createNewCat(body).subscribe(response => {
+      console.log(response);
+    });
     this.catsService.getNewCat().subscribe(response => {
-      this.cat = response.image;
-      this.currentVoteCount = response.count;
+      this.image =
+        (response && response.image) ||
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTT1GKgFHP_ILthMtROZlsHlELrNayJKsIwNm-br0IVWqZZvvBd';
+      this.currentVoteCount = (response && response.count) || '0';
+      this.catId = (response && response.catId) || null;
+      this.compOver = response === undefined ? true : false;
     });
   }
 }

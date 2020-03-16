@@ -1,10 +1,11 @@
 <div class="card">
   <div class="d-flex justify-content-center">
     <div [hidden]="!spinner" class="spinner-border" role="status"></div>
-    <img [hidden]="spinner" class="card-img-top" [src]="cat" alt="Card image cap" />
+    <img [hidden]="spinner" class="card-img-top" [src]="image" alt="Card image cap" />
   </div>
   <div class="card-body">
-    <!-- <p class="card-text">Is this the cat for you?</p> -->
+    <p class="card-text justify-content-center" [hidden]="!compOver">🐈 No cats left in the comp 🐈</p>
+    <!-- <p >Is this the cat for you?</p> -->
     <button (click)="this.getNewCat(true)">👍</button>
 
     <button (click)="this.getNewCat(false)">👎</button>
