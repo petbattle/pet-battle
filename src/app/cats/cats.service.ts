@@ -8,8 +8,11 @@ import { DomSanitizer } from '@angular/platform-browser';
   providedIn: 'root'
 })
 export class CatsService {
+  private cats: any;
+
   constructor(private httpClient: HttpClient, private domSanitizer: DomSanitizer) {}
 
+  // https://api.thecatapi.com/v1/images/search?category_ids=7&mime_types=jpg
   // [{"id":5,"name":"boxes"},
   //   { "id": 15, "name": "clothes" },
   // { "id": 1, "name": "hats" },
@@ -19,34 +22,35 @@ export class CatsService {
   // { "id": 7, "name": "ties" }]
   // https://api.thecatapi.com/v1/images/search?category_ids=5
   // https://api.thecatapi.com/v1/images/search?mime_types=jpg,png
-  //
 
-  // Post new cat to db
-
-  // Change
-
-  //
-  getRandomCat(): Observable<any> {
-    return (
-      this.httpClient
-        // .cache()
-        .get('https://api.thecatapi.com/v1/images/search?category_ids=7&mime_types=jpg,png')
-        .pipe(
-          map((body: any) => {
-            return body;
-          }),
-          // map(e => this.domSanitizer.bypassSecurityTrustUrl(URL.createObjectURL(e))),
-          catchError(() => of({ id: '404', url: 'https://http.cat/404' }))
-        )
-    );
+  setNewCat(cat: any) {
+    this.cats.push(cat);
+    // return this.cats;
   }
 
-  //
+  getNewCat(): Observable<any> {
+    return of(this.cats.pop());
+  }
+
+  getAllCats(): Observable<any> {
+    return this.httpClient
+      .cache()
+      .get('http://cats-cats.apps.hivec.sandbox526.opentlc.com/cats/')
+      .pipe(
+        map((body: any) => {
+          this.cats = this.shuffle(body);
+          return body;
+        }),
+        // map(e => this.domSanitizer.bypassSecurityTrustUrl(URL.createObjectURL(e))),
+        catchError(() => of({ id: '404', image: '' }))
+      );
+  }
+
   getTopCat(): Observable<any> {
     return (
       this.httpClient
         // .cache()
-        .get('https://')
+        .get('http://cats-cats.apps.hivec.sandbox526.opentlc.com/cats/topcat')
         .pipe(
           map((body: any) => {
             return body;
@@ -56,26 +60,12 @@ export class CatsService {
         )
     );
   }
-
-  // bumpCatVote(cat: any): Observable<any> {
-  //   return (
-  //     this.httpClient
-  //       // .cache()
-  //       .put('https://')
-  //       .pipe(
-  //         map((body: any) => {
-  //           return body;
-  //         }),
-  //         catchError(() => of({ id: '404', url: 'https://http.cat/404' }))
-  //       )
-  //   );
-  // }
 
   createNewCat(cat: any): Observable<any> {
     return (
       this.httpClient
         // .cache()
-        .post('/cats', cat)
+        .post('http://cats-cats.apps.hivec.sandbox526.opentlc.com/cats', cat)
         .pipe(
           map((body: any) => {
             return body;
@@ -84,5 +74,13 @@ export class CatsService {
           // catchError(() => of({ id: '404', url: 'https://http.cat/404' }))
         )
     );
+  }
+
+  private shuffle(a: any): any {
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
   }
 }
