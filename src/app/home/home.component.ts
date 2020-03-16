@@ -44,10 +44,6 @@ export class HomeComponent {
         const image = new Image();
         image.src = e.target.result;
         image.onload = rs => {
-          const img_height = rs.currentTarget['height'];
-          const img_width = rs.currentTarget['width'];
-          console.log(img_height, img_width);
-
           const imgBase64Path = e.target.result;
           this.cardImageBase64 = imgBase64Path;
           this.isImageSaved = true;
@@ -64,10 +60,13 @@ export class HomeComponent {
   }
 
   submitNewCat() {
+    let newCat = { count: 0, vote: true, image: this.cardImageBase64 };
     // TODO - add call to API to submit new cat here
-    this.catsService.createNewCat({ votes: 0, image: this.cardImageBase64 }).subscribe(result => {
+    this.catsService.createNewCat(newCat).subscribe(result => {
       if (result) {
-        console.log('Cat added with id', result);
+        // console.log('Cat added with id', result);
+        newCat.id = result;
+        this.catsService.setNewCat(newCat);
         this.modalService.dismissAll('Added a cat - its all good');
       } else {
         this.error = result;
