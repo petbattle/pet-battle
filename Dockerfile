@@ -4,7 +4,7 @@
 # CMD ["nginx", "-g", "daemon off;"]
 
 # NOTE THIS IS NOT HOW YOU SHOULD RUN AN ANGULAR APP IN 'PROD MODE'
-FROM registry.redhat.io/rhoar-nodejs/nodejs-10
+FROM openshift/nodejs-010-centos7
 # FROM registry.redhat.io/rhel8/nodejs-12
 WORKDIR /opt/app-root/src
 COPY package*.json ./

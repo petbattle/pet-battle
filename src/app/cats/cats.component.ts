@@ -20,6 +20,10 @@ export class CatsComponent implements OnInit {
   constructor(private catsService: CatsService) {}
 
   ngOnInit() {
+    this.refresh();
+  }
+
+  public refresh() {
     this.catsService.getTopCat().subscribe(response => {
       this.first = response[0].image;
       this.firstCount = response[0].count;

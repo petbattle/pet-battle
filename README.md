@@ -30,6 +30,13 @@ oc process -f buildconfig.yaml \
 
 2. Run it
 
+```
+oc process -f deploymentconfig.yaml \
+    -p NAME=pet-battle \
+    -p IMAGE=quay.io/springdo/pet-battle-nginx:latest \
+    | oc apply -n springdo -f -
+```
+
 # Project structure
 
 ```

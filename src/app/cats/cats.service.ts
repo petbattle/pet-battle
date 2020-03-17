@@ -47,17 +47,12 @@ export class CatsService {
   }
 
   getTopCat(): Observable<any> {
-    return (
-      this.httpClient
-        // .cache()
-        .get('http://cats-cats.apps.hivec.sandbox526.opentlc.com/cats/topcats')
-        .pipe(
-          map((body: any) => {
-            return body;
-          }),
-          // map(e => this.domSanitizer.bypassSecurityTrustUrl(URL.createObjectURL(e))),
-          catchError(() => of({ id: '404', url: 'https://http.cat/404' }))
-        )
+    return this.httpClient.get('http://cats-cats.apps.hivec.sandbox526.opentlc.com/cats/topcats').pipe(
+      map((body: any) => {
+        return body;
+      }),
+      // map(e => this.domSanitizer.bypassSecurityTrustUrl(URL.createObjectURL(e))),
+      catchError(() => of({ id: '404', url: 'https://http.cat/404' }))
     );
   }
 

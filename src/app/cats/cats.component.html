@@ -1,5 +1,5 @@
 <div class="container">
-  <div class="row mt-5">
+  <div class="row mt-5 mb-3">
     <div class="col-sm-4">
       <div class="card text-center">
         <img class="card-img-top" [src]="second" alt="🏵️ Second Place Cat" />
@@ -27,6 +27,10 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div class="text-center">
+    <button type="button" class="btn btn-light " (click)="refresh()">🔄 Refresh the Leaderboard 🔄</button>
   </div>
 
   <div class="row mt-5">
