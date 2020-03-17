@@ -36,8 +36,9 @@ export class CatcardComponent implements OnInit {
         (response && response.image) ||
         'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTT1GKgFHP_ILthMtROZlsHlELrNayJKsIwNm-br0IVWqZZvvBd';
       this.currentVoteCount = (response && response.count) || '0';
-      this.catId = (response && response.catId) || null;
+      this.catId = (response && response.id) || null;
       this.compOver = response === undefined ? true : false;
+      this.spinner = false;
     });
     this.catsService.getTopCat();
   }
