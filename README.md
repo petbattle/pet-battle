@@ -17,6 +17,19 @@ npm install
 npm start
 ```
 
+# Build and Deploy on OpenShift
+
+1. Build it
+
+```sh
+oc process -f buildconfig.yaml \
+    -p NAME=pet-battle \
+    -p SOURCE_REPOSITORY_URL=https://github.com/springdo/pet-battle.git \
+    | oc apply -n springdo -f -
+```
+
+2. Run it
+
 # Project structure
 
 ```
