@@ -38,7 +38,7 @@ export class CatsService {
       .get('http://cats-cats.apps.hivec.sandbox526.opentlc.com/cats/')
       .pipe(
         map((body: any) => {
-          this.cats = this.shuffle(body);
+          this.cats = this.cats ? this.cats : this.shuffle(body);
           return body;
         }),
         // map(e => this.domSanitizer.bypassSecurityTrustUrl(URL.createObjectURL(e))),

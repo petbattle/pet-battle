@@ -16,6 +16,7 @@ export class CatsComponent implements OnInit {
   public third: string;
   public thirdCount: string;
   public listOfCatCards = [1, 2, 3, 4];
+  public refreshing = true;
 
   constructor(private catsService: CatsService) {}
 
@@ -24,6 +25,7 @@ export class CatsComponent implements OnInit {
   }
 
   public refresh() {
+    this.refreshing = false;
     this.catsService.getTopCat().subscribe(response => {
       this.first = response[0].image;
       this.firstCount = response[0].count;
@@ -31,6 +33,7 @@ export class CatsComponent implements OnInit {
       this.secondCount = response[1].count;
       this.third = response[2].image;
       this.thirdCount = response[2].count;
+      this.refreshing = true;
     });
   }
 }

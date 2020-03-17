@@ -17,7 +17,7 @@ export class CatcardComponent implements OnInit {
 
   ngOnInit() {
     this.catsService.getAllCats().subscribe(response => {
-      const randoInt = Math.floor(Math.random() * (response.length + 1));
+      const randoInt = Math.floor(Math.random() * response.length);
       this.image = response[randoInt].image;
       this.spinner = false;
       this.currentVoteCount = response[randoInt].count;

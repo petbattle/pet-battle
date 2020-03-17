@@ -4,11 +4,11 @@
     <img [hidden]="spinner" class="card-img-top" [src]="image" alt="Card image cap" />
   </div>
   <div class="card-body">
-    <p class="card-text justify-content-center" [hidden]="!compOver">🐈 No cats left in the comp 🐈</p>
+    <p class="card-text justify-content-center" [hidden]="!compOver">🐈 No cats left in the competition 🐈</p>
     <!-- <p >Is this the cat for you?</p> -->
-    <button (click)="this.getNewCat(true)">👍</button>
+    <button (click)="this.getNewCat(true)" [disabled]="compOver">👍</button>
 
-    <button (click)="this.getNewCat(false)">👎</button>
+    <button (click)="this.getNewCat(false)" [disabled]="compOver">👎</button>
 
     <span style="float: right;">🐾 {{ currentVoteCount }} </span>
   </div>
