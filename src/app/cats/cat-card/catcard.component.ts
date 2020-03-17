@@ -16,18 +16,18 @@ export class CatcardComponent implements OnInit {
   constructor(private catsService: CatsService) {}
 
   ngOnInit() {
-    this.catsService.getAllCats().subscribe(response => {
-      const randoInt = Math.floor(Math.random() * response.length);
-      this.image = response[randoInt].image;
+    this.catsService.getNewCat().subscribe(response => {
+      this.image = response.image;
+      this.currentVoteCount = response.count;
+      this.catId = response.id;
       this.spinner = false;
-      this.currentVoteCount = response[randoInt].count;
-      this.catId = response[randoInt].id;
     });
   }
 
   getNewCat(vote: boolean) {
+    this.spinner = true;
     const body = { image: this.image, id: this.catId, count: this.currentVoteCount, vote };
-    vote ? this.currentVoteCount++ : (this.currentVoteCount = this.currentVoteCount);
+    vote ? this.currentVoteCount++ : this.currentVoteCount--;
     this.catsService.createNewCat(body).subscribe(response => {
       console.log(response);
     });
@@ -40,6 +40,5 @@ export class CatcardComponent implements OnInit {
       this.compOver = response === undefined ? true : false;
       this.spinner = false;
     });
-    this.catsService.getTopCat();
   }
 }

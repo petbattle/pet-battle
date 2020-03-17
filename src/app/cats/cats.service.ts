@@ -29,13 +29,42 @@ export class CatsService {
   }
 
   getNewCat(): Observable<any> {
-    return of(this.cats.pop());
+    if (this.cats.length > 0) {
+      const cat = this.cats.pop();
+      return this.httpClient
+        .cache()
+        .get(`http://cats-cats.apps.hivec.sandbox526.opentlc.com/cats/${cat.id}`)
+        .pipe(
+          map((body: any) => {
+            // this.cats = this.cats ? this.cats : this.shuffle(body);
+            return body;
+          }),
+          // map(e => this.domSanitizer.bypassSecurityTrustUrl(URL.createObjectURL(e))),
+          catchError(() => of({ id: '404', image: '' }))
+        );
+    } else {
+      // else return undefined ...  :shrug:
+      return of(this.cats.pop());
+    }
   }
 
   getAllCats(): Observable<any> {
     return this.httpClient
       .cache()
       .get('http://cats-cats.apps.hivec.sandbox526.opentlc.com/cats/')
+      .pipe(
+        map((body: any) => {
+          // this.cats = this.cats ? this.cats : this.shuffle(body);
+          return body;
+        }),
+        // map(e => this.domSanitizer.bypassSecurityTrustUrl(URL.createObjectURL(e))),
+        catchError(() => of({ id: '404', image: '' }))
+      );
+  }
+  getAllCatIds(): Observable<any> {
+    return this.httpClient
+      .cache()
+      .get('http://cats-cats.apps.hivec.sandbox526.opentlc.com/cats/ids')
       .pipe(
         map((body: any) => {
           this.cats = this.cats ? this.cats : this.shuffle(body);

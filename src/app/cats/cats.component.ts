@@ -17,11 +17,15 @@ export class CatsComponent implements OnInit {
   public thirdCount: string;
   public listOfCatCards = [1, 2, 3, 4];
   public refreshing = true;
+  public gotCats = false;
 
   constructor(private catsService: CatsService) {}
 
   ngOnInit() {
     this.refresh();
+    this.catsService.getAllCatIds().subscribe(response => {
+      response.length > 0 ? (this.gotCats = true) : (this.gotCats = false);
+    });
   }
 
   public refresh() {

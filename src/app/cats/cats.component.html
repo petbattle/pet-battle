@@ -39,7 +39,7 @@
   <h5 class="text-center mt-3">Upvote or Downvote your favourite cat to reveal another one ...</h5>
   <div class="row mt-5">
     <div class="col-sm-3" *ngFor="let cat of listOfCatCards">
-      <app-catcard></app-catcard>
+      <app-catcard *ngIf="gotCats"></app-catcard>
     </div>
   </div>
 </div>
