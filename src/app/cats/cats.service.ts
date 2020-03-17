@@ -50,7 +50,7 @@ export class CatsService {
     return (
       this.httpClient
         // .cache()
-        .get('http://cats-cats.apps.hivec.sandbox526.opentlc.com/cats/topcat')
+        .get('http://cats-cats.apps.hivec.sandbox526.opentlc.com/cats/topcats')
         .pipe(
           map((body: any) => {
             return body;

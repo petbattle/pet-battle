@@ -1,16 +1,35 @@
 <div class="container">
-  <div class="row">
+  <div class="row mt-5">
     <div class="col-sm-4">
-      <!-- Current Top Cat 👑 -->
-      <div class="card">
-        <img class="card-img-top" [src]="cat" alt="Card image cap" />
-        <!-- <div class="card-body">
-        </div> -->
+      <div class="card text-center">
+        <img class="card-img-top" [src]="second" alt="🏵️ Second Place Cat" />
+        <div class="card-body">
+          <h3 class="card-title">🥈</h3>
+          <p class="card-text">🏵️ Second Place Cat 🐾 {{ secondCount }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card text-center">
+        <img class="card-img-top" [src]="first" alt="Current Top Cat 👑" />
+        <div class="card-body">
+          <h3 class="card-title">🥇</h3>
+          <p class="card-text">👑 Current TopCat 🐾 {{ firstCount }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card text-center">
+        <img class="card-img-top" [src]="third" alt="Third place cat 🏵️" />
+        <div class="card-body">
+          <h3 class="card-title">🥉</h3>
+          <p class="card-text">🏵️ Third Place Cat 🐾 {{ thirdCount }}</p>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="row">
+  <div class="row mt-5">
     <div class="col-sm-3" *ngFor="let cat of listOfCatCards">
       <app-catcard></app-catcard>
     </div>

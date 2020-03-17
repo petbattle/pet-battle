@@ -60,13 +60,10 @@ export class HomeComponent {
   }
 
   submitNewCat() {
-    let newCat = { count: 0, vote: true, image: this.cardImageBase64 };
     // TODO - add call to API to submit new cat here
-    this.catsService.createNewCat(newCat).subscribe(result => {
+    this.catsService.createNewCat({ count: 0, vote: true, image: this.cardImageBase64 }).subscribe(result => {
       if (result) {
-        // console.log('Cat added with id', result);
-        newCat.id = result;
-        this.catsService.setNewCat(newCat);
+        this.catsService.setNewCat({ count: 0, vote: true, image: this.cardImageBase64, id: result });
         this.modalService.dismissAll('Added a cat - its all good');
       } else {
         this.error = result;

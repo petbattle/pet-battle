@@ -9,17 +9,24 @@ import { CatsService } from './cats.service';
   styleUrls: ['./cats.component.scss']
 })
 export class CatsComponent implements OnInit {
-  public cat: any;
+  public first: string;
+  public firstCount: string;
+  public second: string;
+  public secondCount: string;
+  public third: string;
+  public thirdCount: string;
   public listOfCatCards = [1, 2, 3, 4];
-  private topCat: any;
 
   constructor(private catsService: CatsService) {}
 
   ngOnInit() {
     this.catsService.getTopCat().subscribe(response => {
-      // todo - fix this when api come along
-      // this.topCat = response[0].id;
-      // this.cat = response[0].url;
+      this.first = response[0].image;
+      this.firstCount = response[0].count;
+      this.second = response[1].image;
+      this.secondCount = response[1].count;
+      this.third = response[2].image;
+      this.thirdCount = response[2].count;
     });
   }
 }

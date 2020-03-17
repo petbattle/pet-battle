@@ -39,5 +39,6 @@ export class CatcardComponent implements OnInit {
       this.catId = (response && response.catId) || null;
       this.compOver = response === undefined ? true : false;
     });
+    this.catsService.getTopCat();
   }
 }
