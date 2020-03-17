@@ -4,7 +4,8 @@
 # CMD ["nginx", "-g", "daemon off;"]
 
 # NOTE THIS IS NOT HOW YOU SHOULD RUN AN ANGULAR APP IN 'PROD MODE'
-FROM registry.redhat.io/rhel8/nodejs-12
+FROM openshift/nodejs:latest
+# FROM registry.redhat.io/rhel8/nodejs-12
 WORKDIR /opt/app-root/src
 COPY package*.json ./
 RUN npm install
