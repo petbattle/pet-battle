@@ -9,6 +9,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 export class CatsService {
   private cats: any;
+  private catUrl: 'http://cats-pet-battle-api.apps.s43.core.rht-labs.com';
 
   constructor(private httpClient: HttpClient, private domSanitizer: DomSanitizer) {}
 
@@ -33,7 +34,7 @@ export class CatsService {
       const cat = this.cats.pop();
       return this.httpClient
         .cache()
-        .get(`http://cats-cats.apps.hivec.sandbox526.opentlc.com/cats/${cat.id}`)
+        .get(`${this.catUrl}/cats/${cat.id}`)
         .pipe(
           map((body: any) => {
             // this.cats = this.cats ? this.cats : this.shuffle(body);
@@ -51,7 +52,7 @@ export class CatsService {
   getAllCats(): Observable<any> {
     return this.httpClient
       .cache()
-      .get('http://cats-cats.apps.hivec.sandbox526.opentlc.com/cats/')
+      .get(`${this.catUrl}/cats/`)
       .pipe(
         map((body: any) => {
           // this.cats = this.cats ? this.cats : this.shuffle(body);
@@ -64,7 +65,7 @@ export class CatsService {
   getAllCatIds(): Observable<any> {
     return this.httpClient
       .cache()
-      .get('http://cats-cats.apps.hivec.sandbox526.opentlc.com/cats/ids')
+      .get(`${this.catUrl}/cats/ids`)
       .pipe(
         map((body: any) => {
           this.cats = this.cats ? this.cats : this.shuffle(body);
@@ -76,7 +77,7 @@ export class CatsService {
   }
 
   getTopCat(): Observable<any> {
-    return this.httpClient.get('http://cats-cats.apps.hivec.sandbox526.opentlc.com/cats/topcats').pipe(
+    return this.httpClient.get(`${this.catUrl}/cats/topcats`).pipe(
       map((body: any) => {
         return body;
       }),
@@ -89,7 +90,7 @@ export class CatsService {
     return (
       this.httpClient
         // .cache()
-        .post('http://cats-cats.apps.hivec.sandbox526.opentlc.com/cats', cat)
+        .post(`${this.catUrl}/cats`, cat)
         .pipe(
           map((body: any) => {
             return body;
