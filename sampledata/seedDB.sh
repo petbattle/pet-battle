@@ -38,6 +38,10 @@ curl -s -H "Content-Type: application/json" -X GET http://${HOST}/cats/ | jq
 for img in "${cats_array[@]}"; do
     counter=$[ ( $RANDOM % 5 )  + 0 ] 
     json_req='{"count":"'$counter'","vote":true,"image":"'$img'"}'
-    curl -s -X POST -H "$CONTENT_TYPE" --data "${json_req}" http://$HOST/cats/
+    # curl -s -X POST -H "$CONTENT_TYPE" --data "${json_req}" http://$HOST/cats/
+    curl -s -X POST -H "$CONTENT_TYPE" http://$HOST/cats/ -d @/dev/fd/3 3<< EOF
+${json_req}
+EOF
     echo "📦....🐈"
+
 done
