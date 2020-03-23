@@ -12,7 +12,7 @@ const proxyConfig = [
     pathRewrite: {
       '^/cats': '/cats'
     },
-    target: 'http://cats-cats.apps.hivec.sandbox526.opentlc.com/',
+    target: 'http://cats-pet-battle-api.apps.s43.core.rht-labs.com/',
     changeOrigin: true,
     secure: false
   }

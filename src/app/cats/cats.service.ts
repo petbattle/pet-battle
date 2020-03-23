@@ -9,9 +9,11 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 export class CatsService {
   private cats: any;
-  private catUrl: 'http://cats-pet-battle-api.apps.s43.core.rht-labs.com';
+  private catUrl: string;
 
-  constructor(private httpClient: HttpClient, private domSanitizer: DomSanitizer) {}
+  constructor(private httpClient: HttpClient, private domSanitizer: DomSanitizer) {
+    this.catUrl = 'http://cats-pet-battle-api.apps.s43.core.rht-labs.com';
+  }
 
   // https://api.thecatapi.com/v1/images/search?category_ids=7&mime_types=jpg
   // [{"id":5,"name":"boxes"},
