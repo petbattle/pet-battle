@@ -8,7 +8,7 @@ export class EnvService {
   // be overridden by env.js
 
   // API url
-  public customEnv = { apiUrl: 'http://localhost:8888' };
+  public customEnv = { catUrl: 'http://cats-pet-battle-api.apps.s43.core.rht-labs.com', apiUrl: 'http://localhost:8888' };
 
   // Whether or not to enable debug mode
   public enableDebug = true;
