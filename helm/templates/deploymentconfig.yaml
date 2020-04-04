@@ -55,4 +55,5 @@ spec:
           name: "{{ .Values.name }}-environment"
         name: app-config
   test: false
-  triggers: []
+  triggers:
+    - type: "ConfigChange"

@@ -53,6 +53,7 @@ objects:
           terminationGracePeriodSeconds: 30
       test: false
       triggers:
+        - type: 'ConfigChange'
 parameters:
   - name: NAME
     displayName: Name
