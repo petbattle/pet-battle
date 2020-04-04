@@ -4,15 +4,18 @@ kind: Service
 metadata:
   labels:
     app: {{ .Values.name }}
+    app.kubernetes.io/component: {{ .Values.name }}
+    app.kubernetes.io/instance: {{ .Values.name }}
   name: {{ .Values.name }}
 spec:
   ports:
-    - name: "{{ .Values.port }}-tcp"
-      port: {{ .Values.port }}
+    - port: 8080
       protocol: TCP
-      targetPort: {{ .Values.port }}
+      targetPort: 8080
+      name: 8080-tcp
   selector:
-    app: {{ .Values.name }}
     deploymentconfig: {{ .Values.name }}
   sessionAffinity: None
   type: ClusterIP
+status:
+  loadBalancer: {}

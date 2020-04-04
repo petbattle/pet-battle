@@ -3,21 +3,18 @@
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  annotations:
-    haproxy.router.openshift.io/timeout: 4m
-    openshift.io/host.generated: "true"
+  labels:
+    app: {{ .Values.name }}
+    app.kubernetes.io/component: {{ .Values.name }}
+    app.kubernetes.io/instance: {{ .Values.name }}
   name: {{ .Values.name }}
 spec:
-  host: null
-  tls:
-    insecureEdgeTerminationPolicy: Redirect
-    termination: edge
+  port:
+    targetPort: 8080-tcp
   to:
     kind: Service
     name: {{ .Values.name }}
-status:
-  ingress:
-    - conditions:
-        - status: 'True'
-          type: Admitted
+    weight: 100
+  wildcardPolicy: None
+status: {}
 {{ end }}

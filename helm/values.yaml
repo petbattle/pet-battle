@@ -14,7 +14,6 @@ app_tag: latest
 
 # OCP route
 route: true
-port: 8080
 
 # custom end point injected by config map. This is likely to changed
-config_map: "{ catUrl: http://cats-pet-battle-api.apps.s43.core.rht-labs.com }"
+config_map: "{ catUrl: 'http://cats-pet-battle-api.apps.s43.core.rht-labs.com' }"
