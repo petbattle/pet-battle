@@ -3,7 +3,7 @@
 This project was generated with [ngX-Rocket](https://github.com/ngx-rocket/generator-ngx-rocket/)
 version 7.1.0
 
-# Getting started
+## Getting started
 
 1. Go to project folder and install dependencies:
 
@@ -17,7 +17,7 @@ npm install
 npm start
 ```
 
-# Deploy on OpenShift using Helm
+## Deploy prebuilt app on OpenShift using Helm
 
 ```
 helm template -f helm/values.yaml helm | oc apply -n my-namespace -f-
@@ -29,7 +29,15 @@ To deploy a specific tagged version set the app_tag variable
 helm template -f helm/values.yaml helm --set app_tag=purple | oc apply -n my-namespace -f-
 ```
 
-# Build and Deploy on OpenShift
+## Config Map for the API
+
+```
+helm template -f helm/values.yaml helm --set config_map="'http://cats-pet-battle-api.apps.ssmycluster.com'" | oc apply -f-
+oc scale dc/pet-battle --replicas=0
+oc scale dc/pet-battle --replicas=10
+```
+
+## Build and Deploy on OpenShift
 
 1. Build it
 
