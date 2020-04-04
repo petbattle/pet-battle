@@ -1,6 +1,10 @@
 {{- if .Values.config_map }}
 ---
+apiVersion: v1
 kind: ConfigMap
+metadata:
+  name:  "{{ .Values.name }}-environment"
+  namespace: {{ .Values.destination_namespace }}
 data:
   env: |-
     (function (window) {
@@ -10,7 +14,4 @@ data:
       // Setting this to false will disable console output
       window.__env.enableDebug = true;
     }(this));
-metadata:
-  name: environment
-  namespace: {{ .Values.destination_namespace }}
 {{- end }}

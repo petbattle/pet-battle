@@ -52,7 +52,7 @@ spec:
           items:
             - key: env
               path: env.js
-          name: environment
+          name: "{{ .Values.name }}-environment"
         name: app-config
   test: false
   triggers: []
