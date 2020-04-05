@@ -1,5 +1,4 @@
-name: pet-battle
-destination_namespace: springdo
+app_name: pet-battle
 
 # build info not used atm
 source_repo: https://github.com/springdo/pet-battle.git
@@ -8,6 +7,7 @@ source_context_dir: "/"
 
 # Docker deets
 image_repository: quay.io
+image_name: pet-battle
 image_namespace: springdo
 # likely over written by the Argo definition
 app_tag: latest
@@ -16,4 +16,4 @@ app_tag: latest
 route: true
 
 # custom end point injected by config map. This is likely to changed
-config_map: "'http://cats-pet-battle-api.apps.s43.core.rht-labs.com'"
+config_map: "'http://sd-ci-cd-pet-battle-api.apps.s43.core.rht-labs.com'"

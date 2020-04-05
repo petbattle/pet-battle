@@ -9,10 +9,10 @@ metadata:
   name: {{ .Values.name }}
 spec:
   ports:
-    - port: 8080
+    - name: 8080-tcp
+      port: 8080
       protocol: TCP
       targetPort: 8080
-      name: 8080-tcp
   selector:
     deploymentconfig: {{ .Values.name }}
   sessionAffinity: None
