@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name:  "ds-environment"
+  name:  "{{ .Values.name }}-environment"
 data:
   env: |-
     (function (window) {
