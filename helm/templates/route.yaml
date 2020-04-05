@@ -4,16 +4,16 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   labels:
-    app: {{ .Values.name }}
-    app.kubernetes.io/component: {{ .Values.name }}
-    app.kubernetes.io/instance: {{ .Values.name }}
-  name: {{ .Values.name }}
+    app: {{ .Values.app_name }}
+    app.kubernetes.io/component: {{ .Values.app_name }}
+    app.kubernetes.io/instance: {{ .Values.app_name }}
+  name: {{ .Values.app_name }}
 spec:
   port:
     targetPort: 8080-tcp
   to:
     kind: Service
-    name: {{ .Values.name }}
+    name: {{ .Values.app_name }}
     weight: 100
   wildcardPolicy: None
 status: {}

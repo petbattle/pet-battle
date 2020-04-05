@@ -2,13 +2,13 @@ apiVersion: apps.openshift.io/v1
 kind: DeploymentConfig
 metadata:
   labels:
-    app: {{ .Values.name }}
-  name: {{ .Values.name }}
+    app: {{ .Values.app_name }}
+  name: {{ .Values.app_name }}
 spec:
   replicas: 5
   revisionHistoryLimit: 10
   selector:
-    deploymentconfig: {{ .Values.name }}
+    deploymentconfig: {{ .Values.app_name }}
   strategy:
     activeDeadlineSeconds: 21600
     resources: {}
@@ -22,13 +22,13 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ .Values.name }}
-        deploymentconfig: {{ .Values.name }}
+        app: {{ .Values.app_name }}
+        deploymentconfig: {{ .Values.app_name }}
     spec:
       containers:
       - image: "{{ .Values.image_repository }}/{{ .Values.image_namespace }}/{{ .Values.image_name }}:{{ .Values.app_tag }}"
         imagePullPolicy: Always
-        name: {{ .Values.name }}
+        name: {{ .Values.app_name }}
         ports:
         - containerPort: 8080
           protocol: TCP
@@ -52,7 +52,7 @@ spec:
       volumes:
       - name: app-config
         configMap:
-          name: "{{ .Values.name }}-environment"
+          name: "{{ .Values.app_name }}-environment"
           defaultMode: 420
           items:
             - key: env
