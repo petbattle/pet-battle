@@ -1,9 +1,13 @@
 app_name: pet-battle
 
 # build info not used atm
-source_repo: https://github.com/springdo/pet-battle.git
-build_tag: 
-source_context_dir: "/"
+build:
+  enabled: true
+  build_tag: latest
+  source_docker_file_path: Dockerfile
+  # source_context_dir: "/"
+  # source_ref: master
+  # source_repo: https://github.com/springdo/pet-battle.git
 
 # Docker deets
 image_repository: quay.io

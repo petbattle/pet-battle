@@ -1,0 +1,43 @@
+{{- if .Values.build }}
+---
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  labels:
+    build: {{ .Values.app_name }}
+    app: {{ .Values.app_name }}
+  name: {{ .Values.app_name }}
+---
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  labels:
+    build: {{ .Values.app_name }}
+    app: {{ .Values.app_name }}
+    type: 'image'
+  name: {{ .Values.app_name }}
+spec:
+  nodeSelector:
+  output:
+    to:
+      kind: ImageStreamTag
+      name: "{{ .Values.app_name }}:{{ .Values.build.build_tag | default "latest"}}"
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    binary: {}
+    type: Binary
+  strategy:
+    dockerStrategy:
+      dockerfilePath: {{ .Values.build.source_docker_file_path }}
+  # source:
+  #   contextDir: {{ .Values.build.source_context_dir }}
+  #   git:
+  #     ref: {{ .Values.build.source_ref }}
+  #     uri: {{ .Values.build.source_repo }}
+  #   type: Git
+  # strategy:
+  #   type: Docker
+  triggers:
+{{ end }}
