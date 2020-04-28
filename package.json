@@ -16,7 +16,9 @@
     "env": "ngx-scripts env npm_package_version",
     "prettier": "prettier --write \"./{src,e2e}/**/*.{ts,js,html,scss}\"",
     "prettier:check": "prettier --list-different \"./{src,e2e}/**/*.{ts,js,html,scss}\"",
-    "generate": "ng generate"
+    "generate": "ng generate",
+    "version": "echo $npm_package_version",
+    "package": "tar -zcvf pet-battle-$(npm run version --silent).tar.gz dist Dockerfile nginx.conf"
   },
   "dependencies": {
     "@angular/animations": "^8.1.0",
