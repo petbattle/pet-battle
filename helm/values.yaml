@@ -2,7 +2,7 @@ app_name: pet-battle
 
 # build info not used atm
 build:
-  enabled: true
+  enabled: false
   build_tag: latest
   source_docker_file_path: Dockerfile
   # source_context_dir: "/"

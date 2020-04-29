@@ -36,7 +36,7 @@ pipeline {
                 }
             }
             when {
-              expression { BUILD_NUMBER == 0 }
+              expression { BUILD_NUMBER == 1 }
             }
             steps {
                 echo '### Create ArgoCD App ? ###'
@@ -72,9 +72,9 @@ pipeline {
 
                 echo '### Packaging App for Nexus ###'
                 sh '''
-                    PACKAGE=${APP_NAME}-$(npm run version --silent)-$JENKINS_TAG.tar.gz
+                    PACKAGE=${APP_NAME}-0.1.0-${JENKINS_TAG}.tar.gz
                     tar -zcvf $PACKAGE dist Dockerfile nginx.conf
-                    curl -vvv -u ${NEXUS_CREDS} --upload-file $PACKAGE http://${NEXUS_SERVICE_HOST}:${NEXUS_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${JOB_NAME}.${BUILD_NUMBER}/${PACKAGE}
+                    curl -vvv -u ${NEXUS_CREDS} --upload-file $PACKAGE http://${NEXUS_SERVICE_SERVICE_HOST}:${NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE}
                 '''
             }
             // Post can be used both on individual stages and for the entire build.
@@ -90,9 +90,8 @@ pipeline {
                 echo '### Get Binary from Nexus and shove it in a box ###'
                 sh  '''
                         rm -rf package-contents*
-                        PACKAGE=${APP_NAME}-$(npm run version --silent)-$JENKINS_TAG.tar.gz
-                        curl -v -f http://${NEXUS_CREDS}@${NEXUS_SERVICE_HOST}:${NEXUS_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${JENKINS_TAG}/${PACKAGE} -o ${PACKAGE}
-                        
+                        PACKAGE=${APP_NAME}-0.1.0-${JENKINS_TAG}.tar.gz
+                        curl -v -f -u ${NEXUS_CREDS} http://${NEXUS_SERVICE_SERVICE_HOST}:${NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE} -o ${PACKAGE}
                         # TODO think about labeling of images for version purposes 
                         # oc patch bc ${APP_NAME} -p "{\\"spec\\":{\\"output\\":{\\"imageLabels\\":[{\\"name\\":\\"THINGY\\",\\"value\\":\\"MY_AWESOME_THINGY\\"},{\\"name\\":\\"OTHER_THINGY\\",\\"value\\":\\"MY_OTHER_AWESOME_THINGY\\"}]}}}"
 
@@ -112,7 +111,10 @@ pipeline {
                 echo '### Commit new image tag to git ###'
                 sh  '''
                     git clone https://github.com/springdo/ubiquitous-journey.git
+                    cd ubiquitous-journey
                     yq w -i example-deployment/values-applications.yaml 'pet_battle.app_tag' ${JENKINS_TAG}
+                    git config --global user.email "jenkins@rht-labs.bot.com"
+                    git config --global user.name "Jenkins"
                     git add example-deployment/values-applications.yaml
                     git commit -m "🚀 AUTOMATED COMMIT - Deployment new app version ${JENKINS_TAG} 🚀"
                     git push https://${GIT_CREDENTIALS_USR}:${GIT_CREDENTIALS_PSW}@github.com/springdo/ubiquitous-journey.git
@@ -120,6 +122,8 @@ pipeline {
 
                 echo '### Ask ArgoCD to Sync the changes and roll it out ###'
                 sh '''
+                    # 1. Check if app of apps exists, if not create?
+                    # 2. sync argocd to change pushed in previous step
 
                 '''
                 echo '### Verify OCP Deployment ###'
