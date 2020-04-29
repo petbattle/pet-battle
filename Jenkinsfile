@@ -98,7 +98,8 @@ pipeline {
 
                 echo '### Install deps ###'
                 // TODO - set proxy via nexus
-                sh 'npm install'
+                // sh 'npm install'
+                sh 'npm ci'
 
                 echo '### Running linter ###'
                 // sh 'npm run lint'
@@ -165,13 +166,15 @@ pipeline {
                 sh '''
                     # 1. Check if app of apps exists, if not create?
                     # 1.1 Check sync not currently in progress . if so, kill it
+
                     # 2. sync argocd to change pushed in previous step
-                    argocd app sync catz --auth-token $ARGOCD_CREDS_PSW --server ${ARGOCD_SERVER_SERVICE_HOST}:${ARGOCD_SERVER_SERVICE_PORT_HTTP} --insecure
-                    # todo sync child app
-                    argocd app sync pb-front-end
-                    argocd app wait pb-front-end
+                    ARGOCD_INFO="--auth-token ${ARGOCD_CREDS_PSW} --server ${ARGOCD_SERVER_SERVICE_HOST}:${ARGOCD_SERVER_SERVICE_PORT_HTTP} --insecure"
+                    argocd app sync catz ${ARGOCD_INFO}
+
+                    # todo sync child app 
+                    argocd app sync pb-front-end ${ARGOCD_INFO}
+                    argocd app wait pb-front-end ${ARGOCD_INFO}
                 '''
-                echo '### Verify OCP Deployment ###'
             }
         }
     }
