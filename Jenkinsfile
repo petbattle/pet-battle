@@ -29,6 +29,47 @@ pipeline {
     }
 
     stages {
+        stage("prepare environment for master deploy") {
+            agent {
+                node {
+                    label "master"
+                }
+            }
+            when {
+              expression { GIT_BRANCH ==~ /(.*master)/ }
+            }
+            steps {
+                script {
+                    // Arbitrary Groovy Script executions can do in script tags
+                    env.VERSION = "cat package.json | jq -r .version".execute().text.minus("'").minus("'")
+                    env.PACKAGE = "${APP_NAME}-${VERSION}-${JENKINS_TAG}.tar.gz"
+                    env.PROJECT_NAMESPACE = "ds-dev"
+                    env.NODE_ENV = "test"
+                    env.E2E_TEST_ROUTE = "oc get route/${APP_NAME} --template='{{.spec.host}}' -n ${PROJECT_NAMESPACE}".execute().text.minus("'").minus("'")
+                }
+            }
+        }
+        stage("prepare environment for develop deploy") {
+            agent {
+                node {
+                    label "master"
+                }
+            }
+            when {
+              expression { GIT_BRANCH ==~ /(.*develop)/ }
+            }
+            steps {
+                script {
+                    // Arbitrary Groovy Script executions can do in script tags
+                    env.VERSION = "cat package.json | jq -r .version".execute().text.minus("'").minus("'")
+                    env.PACKAGE = "${APP_NAME}-${VERSION}-${JENKINS_TAG}.tar.gz"
+                    env.PROJECT_NAMESPACE = "ds-dev"
+                    env.NODE_ENV = "dev"
+                    env.E2E_TEST_ROUTE = "oc get route/${APP_NAME} --template='{{.spec.host}}' -n ${PROJECT_NAMESPACE}".execute().text.minus("'").minus("'")
+                }
+            }
+        }
+
         stage("ArgoCD Create App") {
             agent {
                 node {
@@ -72,9 +113,9 @@ pipeline {
 
                 echo '### Packaging App for Nexus ###'
                 sh '''
-                    PACKAGE=${APP_NAME}-0.1.0-${JENKINS_TAG}.tar.gz
-                    tar -zcvf $PACKAGE dist Dockerfile nginx.conf
-                    curl -vvv -u ${NEXUS_CREDS} --upload-file $PACKAGE http://${NEXUS_SERVICE_SERVICE_HOST}:${NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE}
+                    # PACKAGE=${APP_NAME}-0.1.0-${JENKINS_TAG}.tar.gz
+                    tar -zcvf ${PACKAGE} dist Dockerfile nginx.conf
+                    curl -vvv -u ${NEXUS_CREDS} --upload-file ${PACKAGE} http://${NEXUS_SERVICE_SERVICE_HOST}:${NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE}
                 '''
             }
             // Post can be used both on individual stages and for the entire build.
@@ -89,15 +130,15 @@ pipeline {
             steps {
                 echo '### Get Binary from Nexus and shove it in a box ###'
                 sh  '''
-                        rm -rf package-contents*
-                        PACKAGE=${APP_NAME}-0.1.0-${JENKINS_TAG}.tar.gz
-                        curl -v -f -u ${NEXUS_CREDS} http://${NEXUS_SERVICE_SERVICE_HOST}:${NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE} -o ${PACKAGE}
-                        # TODO think about labeling of images for version purposes 
-                        # oc patch bc ${APP_NAME} -p "{\\"spec\\":{\\"output\\":{\\"imageLabels\\":[{\\"name\\":\\"THINGY\\",\\"value\\":\\"MY_AWESOME_THINGY\\"},{\\"name\\":\\"OTHER_THINGY\\",\\"value\\":\\"MY_OTHER_AWESOME_THINGY\\"}]}}}"
+                    rm -rf package-contents*
+                    # PACKAGE=${APP_NAME}-0.1.0-${JENKINS_TAG}.tar.gz
+                    curl -v -f -u ${NEXUS_CREDS} http://${NEXUS_SERVICE_SERVICE_HOST}:${NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE} -o ${PACKAGE}
+                    # TODO think about labeling of images for version purposes 
+                    # oc patch bc ${APP_NAME} -p "{\\"spec\\":{\\"output\\":{\\"imageLabels\\":[{\\"name\\":\\"THINGY\\",\\"value\\":\\"MY_AWESOME_THINGY\\"},{\\"name\\":\\"OTHER_THINGY\\",\\"value\\":\\"MY_OTHER_AWESOME_THINGY\\"}]}}}"
 
-                        oc start-build ${APP_NAME} --from-archive=${PACKAGE} --follow
-                        oc tag ${PIPELINES_NAMESPACE}/${APP_NAME}:latest ds-dev/${APP_NAME}:${JENKINS_TAG}
-                    '''
+                    oc start-build ${APP_NAME} --from-archive=${PACKAGE} --follow
+                    oc tag ${PIPELINES_NAMESPACE}/${APP_NAME}:latest ${PROJECT_NAMESPACE}/${APP_NAME}:${JENKINS_TAG}
+                '''
             }
         }
 
@@ -126,6 +167,9 @@ pipeline {
                     # 1.1 Check sync not currently in progress . if so, kill it
                     # 2. sync argocd to change pushed in previous step
                     argocd app sync catz --auth-token $ARGOCD_CREDS_PSW --server ${ARGOCD_SERVER_SERVICE_HOST}:${ARGOCD_SERVER_SERVICE_PORT_HTTP} --insecure
+                    # todo sync child app
+                    argocd app sync pb-front-end
+                    argocd app wait pb-front-end
                 '''
                 echo '### Verify OCP Deployment ###'
             }
