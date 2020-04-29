@@ -1,4 +1,4 @@
-{{- if .Values.build }}
+{{- if .Values.build.enabled }}
 ---
 kind: ImageStream
 apiVersion: image.openshift.io/v1
@@ -29,15 +29,8 @@ spec:
     binary: {}
     type: Binary
   strategy:
+    type: Docker
     dockerStrategy:
       dockerfilePath: {{ .Values.build.source_docker_file_path }}
-  # source:
-  #   contextDir: {{ .Values.build.source_context_dir }}
-  #   git:
-  #     ref: {{ .Values.build.source_ref }}
-  #     uri: {{ .Values.build.source_repo }}
-  #   type: Git
-  # strategy:
-  #   type: Docker
-  triggers:
+  triggers: {}
 {{ end }}

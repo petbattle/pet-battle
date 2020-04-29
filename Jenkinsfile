@@ -96,7 +96,7 @@ pipeline {
                         # oc patch bc ${APP_NAME} -p "{\\"spec\\":{\\"output\\":{\\"imageLabels\\":[{\\"name\\":\\"THINGY\\",\\"value\\":\\"MY_AWESOME_THINGY\\"},{\\"name\\":\\"OTHER_THINGY\\",\\"value\\":\\"MY_OTHER_AWESOME_THINGY\\"}]}}}"
 
                         oc start-build ${APP_NAME} --from-archive=${PACKAGE} --follow
-                        oc tag ${PIPELINES_NAMESPACE}/${APP_NAME}:latest ${PIPELINES_NAMESPACE}/${APP_NAME}:${JENKINS_TAG}
+                        oc tag ${PIPELINES_NAMESPACE}/${APP_NAME}:latest ds-dev/${APP_NAME}:${JENKINS_TAG}
                     '''
             }
         }
@@ -123,8 +123,9 @@ pipeline {
                 echo '### Ask ArgoCD to Sync the changes and roll it out ###'
                 sh '''
                     # 1. Check if app of apps exists, if not create?
+                    # 1.1 Check sync not currently in progress . if so, kill it
                     # 2. sync argocd to change pushed in previous step
-
+                    argocd app sync catz --auth-token $ARGOCD_CREDS_PSW --server ${ARGOCD_SERVER_SERVICE_HOST}:${ARGOCD_SERVER_SERVICE_PORT_HTTP} --insecure
                 '''
                 echo '### Verify OCP Deployment ###'
             }
