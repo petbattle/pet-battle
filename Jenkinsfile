@@ -97,7 +97,7 @@ pipeline {
                 }
             }
             when {
-                expression { GIT_BRANCH ==~ /(.*master|.*develop|.*jenkins)/ }
+                expression { GIT_BRANCH ==~ /(.*master|.*develop)/ }
             }
             steps {
                 // git url: "https://github.com/springdo/pet-battle.git"
@@ -137,7 +137,7 @@ pipeline {
                 }
             }
             when {
-                expression { GIT_BRANCH ==~ /(.*master|.*develop|.*jenkins)/ }
+                expression { GIT_BRANCH ==~ /(.*master|.*develop)/ }
             }
             steps {
                 echo '### Get Binary from Nexus and shove it in a box ###'
@@ -151,6 +151,7 @@ pipeline {
                     # TODO - Think about labelling images. perhaps use --build-args=[git_commit=abd14] or something to map to the LABELS in the dockerfile  
                     # oc patch bc ${APP_NAME} -p "{\\"spec\\":{\\"output\\":{\\"imageLabels\\":[{\\"name\\":\\"git-commit\\",\\"value\\":\\"$GIT_COMMIT\\"},{\\"name\\":\\"build-url\\",\\"value\\":\\"$BUILD_URL\\"},{\\"name\\":\\"jenkins-tag\\",\\"value\\":\\"$JENKINS_TAG\\"}]}}}"
                     oc start-build ${APP_NAME} --from-archive=${PACKAGE} --follow
+                    
                     else
                     oc new-build --binary --name=${APP_NAME} -l app=${APP_NAME} --strategy=docker --follow
                     fi
