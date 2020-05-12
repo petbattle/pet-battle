@@ -207,7 +207,7 @@ pipeline {
                         }
                     }
                     when {
-                        expression { GIT_BRANCH ==~ /(.*dev*|.*feature*|.*fix*)/ }
+                        expression { GIT_BRANCH.startsWith("dev") || GIT_BRANCH.startsWith("feature") || GIT_BRANCH.startsWith("fix") }
                     }
                     steps {
                         sh '''
