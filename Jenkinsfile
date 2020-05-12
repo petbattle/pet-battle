@@ -23,6 +23,7 @@ pipeline {
 
         // Nexus Artifact repo 
         NEXUS_REPO_NAME="labs-static"
+        NEXUS_HELM_REPO = "labs-charts"
     }
 
     // The options directive is for configuration that applies to the whole job.
@@ -34,7 +35,6 @@ pipeline {
     }
 
     stages {
-
         stage('Perpare Environment') {
             failFast true
             parallel {
@@ -50,6 +50,8 @@ pipeline {
                     steps {
                         script {
                             env.TARGET_NAMESPACE = "ds-test"
+                            // app name for master is just pet-battle or something
+                            // env.APP_NAME = "${GIT_BRANCH}-${APP_NAME}".replace("/", "-").toLowerCase()
                         }
                     }
                 }
@@ -66,7 +68,7 @@ pipeline {
                         script {
                             env.TARGET_NAMESPACE = "ds-dev"
                             // in multibranch the job name is just the git branch name
-                            env.APP_NAME = "${APP_NAME}-${JOB_NAME}".replace("/", "-").toLowerCase()
+                            env.APP_NAME = "${GIT_BRANCH}-${APP_NAME}".replace("/", "-").toLowerCase()
                             env.NODE_ENV = "test"
                         }
                     }
@@ -83,7 +85,7 @@ pipeline {
                     steps {
                         script {
                             env.TARGET_NAMESPACE = "ds-dev"
-                            env.APP_NAME = "pet-battle-${GIT_BRANCH}".replace("/", "-").toLowerCase()
+                            env.APP_NAME = "${GIT_BRANCH}-${APP_NAME}".replace("/", "-").toLowerCase()
                         }
                     }
                 }
@@ -156,124 +158,163 @@ pipeline {
                     label "master"
                 }
             }
-            when {
-                expression { GIT_BRANCH ==~ /(.*master|.*develop)/ }
-            }
+            // when {
+            //     expression { GIT_BRANCH ==~ /(.*master|.*develop)/ }
+            // }
             steps {
+                sh 'printenv'
+
                 echo '### Get Binary from Nexus and shove it in a box ###'
                 sh  '''
                     rm -rf package-contents*
                     curl -v -f -u ${NEXUS_CREDS} http://${NEXUS_SERVICE_SERVICE_HOST}:${NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE} -o ${PACKAGE}
 
-                    # TODO think about labeling of images for version purposes 
                     oc get bc ${APP_NAME}
-                    if [ $? -eq 0 ]; then
-                    # TODO - Think about labelling images. perhaps use --build-args=[git_commit=abd14] or something to map to the LABELS in the dockerfile  
-                    # oc patch bc ${APP_NAME} -p "{\\"spec\\":{\\"output\\":{\\"imageLabels\\":[{\\"name\\":\\"git-commit\\",\\"value\\":\\"$GIT_COMMIT\\"},{\\"name\\":\\"build-url\\",\\"value\\":\\"$BUILD_URL\\"},{\\"name\\":\\"jenkins-tag\\",\\"value\\":\\"$JENKINS_TAG\\"}]}}}"
-                    oc start-build ${APP_NAME} --from-archive=${PACKAGE} --follow
-                    
+                    BUILD_ARGS=" --build-arg git_commit=${GIT_COMMIT} --build-arg git_url=${GIT_URL}  --build-arg build_url=${RUN_DISPLAY_URL} --build-arg build_tag=${BUILD_TAG}"
+                    echo ${BUILD_ARGS}
+
+                    # TODO - ENABLE THIS AS S43 is fooooked
+                    if [ $? -eq 1 ]; then
+                        echo " 🏗 no build - creating one 🏗"
+                        # oc new-build --binary --name=${APP_NAME} -l app=${APP_NAME} ${BUILD_ARGS} --strategy=docker
                     else
-                    oc new-build --binary --name=${APP_NAME} -l app=${APP_NAME} --strategy=docker --follow
+                        echo " 🏗 build found - starting it  🏗"
+                        # oc start-build ${APP_NAME} --from-archive=${PACKAGE} ${BUILD_ARGS} --follow
                     fi
+                    // 
                     oc tag ${PIPELINES_NAMESPACE}/${APP_NAME}:latest ${TARGET_NAMESPACE}/${APP_NAME}:${VERSION}
                 '''
             }
         }
 
-        stage("Deploy (via helm install)") {
+        stage("Helm Package App (master)") {
             agent {
                 node {
                     label "jenkins-slave-helm"
                 }
             }
             when {
-                expression { GIT_BRANCH ==~ /(.*jenkins|.*develop)/ }
+                expression { GIT_BRANCH ==~ /(.*master)/ }
             }
             steps {
-                // TODO - if SANDBOX, create release in rando ns
-                sh '''
-                    helm lint helm
-                '''
-                // TODO - if SANDBOX, create release in rando ns
-                sh '''
-                    helm upgrade --install ${APP_NAME} helm \
-                        --namespace=${TARGET_NAMESPACE} \
-                        --set image_name=${APP_NAME}
-                        --set app_tag=${VERSION} \
-                        --set image_repository=${IMAGE_REPOSITORY} \
-                        --set image_namespace=${TARGET_NAMESPACE}
+                sh 'printenv'
+
+                sh  '''
+                    # TODO - yq the variables              
+
+                    # package and release helm chart?
+                    helm package chart/ --app-version ${VERSION} --version ${VERSION} 
+                    curl -vvv -u ${NEXUS_CREDS} ${HELM_REPO} --upload-file ${APP_NAME}-${VERSION}.tgz     
+                    
+                    # TODO - Commit the changes to git? watch for inception loop I guess               
                 '''
             }
-        
         }
 
-        
-        stage("Deploy (ArgoCD)") {
+        stage("Deploy App") {
+            failFast true
+            parallel {
+                stage("sandbox - helm3 publish and install"){
+                    agent {
+                        node {
+                            label "jenkins-slave-helm"
+                        }
+                    }
+                    when {
+                        expression { GIT_BRANCH ==~ /(.*dev|.*feature|.*fix)/ }
+                    }
+                    steps {
+                        sh '''
+                            helm lint chart
+                        '''
+                        // TODO - if SANDBOX, create release in rando ns
+                        sh '''
+                            helm upgrade --install ${APP_NAME} chart \
+                                --namespace=${TARGET_NAMESPACE} \
+                                --set image_name=${APP_NAME}
+                                --set app_tag=${VERSION} \
+                                --set image_repository=${IMAGE_REPOSITORY} \
+                                --set image_namespace=${TARGET_NAMESPACE}
+                        '''
+                    }
+                }
+                stage("test env - ArgoCD sync") {
+                    agent {
+                        node {
+                            label "jenkins-slave-argocd"
+                        }
+                    }
+                    when {
+                        expression { GIT_BRANCH ==~ /(.*master)/ }
+                    }
+                    steps {
+                        echo '### Commit new image tag to git ###'
+                        sh  '''
 
-            // TODO - break this down into a  parallel if / else type thingy
+                            # TODO - fix all this after chat with @eformat
+                            git clone https://github.com/springdo/ubiquitous-journey.git
+                            cd ubiquitous-journey
+                            yq w -i example-deployment/values-applications.yaml 'pet_battle.app_tag' ${VERSION}
+
+                            git config --global user.email "jenkins@rht-labs.bot.com"
+                            git config --global user.name "Jenkins"
+                            git config --global push.default simple
+
+                            git add example-deployment/values-applications.yaml
+                            git commit -m "🚀 AUTOMATED COMMIT - Deployment new app version ${VERSION} 🚀"
+                            # git push https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@github.com/springdo/ubiquitous-journey.git
+                        '''
+
+                        echo '### Ask ArgoCD to Sync the changes and roll it out ###'
+                        sh '''
+                            # 1. Check if app of apps exists, if not create?
+                            # 1.1 Check sync not currently in progress . if so, kill it
+
+                            # 2. sync argocd to change pushed in previous step
+                            ARGOCD_INFO="--auth-token ${ARGOCD_CREDS_PSW} --server ${ARGOCD_SERVER_SERVICE_HOST}:${ARGOCD_SERVER_SERVICE_PORT_HTTP} --insecure"
+                            argocd app sync catz ${ARGOCD_INFO}
+
+                            # todo sync child app 
+                            argocd app sync pb-front-end ${ARGOCD_INFO}
+                            argocd app wait pb-front-end ${ARGOCD_INFO}
+                        '''
+                    }
+                }
+
+
+            }
+        }
+
+        stage("End to End Test") {
             agent {
                 node {
-                    label "jenkins-slave-argocd"
+                    label "master"
                 }
             }
             when {
                 expression { GIT_BRANCH ==~ /(.*master)/ }
             }
             steps {
-                echo '### Commit new image tag to git ###'
                 sh  '''
-                    git clone https://github.com/springdo/ubiquitous-journey.git
-                    cd ubiquitous-journey
-                    yq w -i example-deployment/values-applications.yaml 'pet_battle.app_tag' ${JENKINS_TAG}
-
-                    git config --global user.email "jenkins@rht-labs.bot.com"
-                    git config --global user.name "Jenkins"
-                    git add example-deployment/values-applications.yaml
-                    git commit -m "🚀 AUTOMATED COMMIT - Deployment new app version ${JENKINS_TAG} 🚀"
-                    git push https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@github.com/springdo/ubiquitous-journey.git
-                '''
-
-                echo '### Ask ArgoCD to Sync the changes and roll it out ###'
-                sh '''
-                    # 1. Check if app of apps exists, if not create?
-                    # 1.1 Check sync not currently in progress . if so, kill it
-
-                    # 2. sync argocd to change pushed in previous step
-                    ARGOCD_INFO="--auth-token ${ARGOCD_CREDS_PSW} --server ${ARGOCD_SERVER_SERVICE_HOST}:${ARGOCD_SERVER_SERVICE_PORT_HTTP} --insecure"
-                    argocd app sync catz ${ARGOCD_INFO}
-
-                    # todo sync child app 
-                    argocd app sync pb-front-end ${ARGOCD_INFO}
-                    argocd app wait pb-front-end ${ARGOCD_INFO}
+                    echo "TODO - Run tests"
                 '''
             }
         }
 
-        // stage("Helm version update") {
-        //     agent {
-        //         node {
-        //             label "jenkins-slave-helm"
-        //         }
-        //     }
-        //     steps {
-        //         yq -w -i helm/Chart.yaml 'appVersion' ${JENKINS_TAG} ..
-                
-        //         // after this should I bump chart version in UJ again or use "source_ref: master" 
-        //     }
-        // }
-    
-        // stage("Test stuff..") {
-        //     agent {
-        //         node {
-        //             label "jenkins-slave-.."
-        //         }
-        //     }
-        //     steps {
-        //         //TODO
-        //     }
-
-        // }
-
-
+        stage("Promote app to Staging") {
+            agent {
+                node {
+                    label "master"
+                }
+            }
+            when {
+                expression { GIT_BRANCH ==~ /(.*master)/ }
+            }
+            steps {
+                sh  '''
+                    echo "TODO - Run ArgoCD Sync 2 for staging env"
+                '''
+            }
+        }
     }
 }
