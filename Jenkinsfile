@@ -167,7 +167,7 @@ pipeline {
                         # oc start-build ${APP_NAME} --from-archive=${PACKAGE} ${BUILD_ARGS} --follow
                     fi
                     
-                    
+
                     oc tag ${PIPELINES_NAMESPACE}/${APP_NAME}:latest ${TARGET_NAMESPACE}/${APP_NAME}:${VERSION}
                 '''
             }
@@ -207,7 +207,7 @@ pipeline {
                         }
                     }
                     when {
-                        expression { GIT_BRANCH ==~ /(.*dev|.*feature|.*fix)/ }
+                        expression { GIT_BRANCH ==~ /(.*dev*|.*feature*|.*fix*)/ }
                     }
                     steps {
                         sh '''
