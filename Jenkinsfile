@@ -91,22 +91,7 @@ pipeline {
                 }
             }
         }
-        stage("ArgoCD Create App") {
-            agent {
-                node {
-                    label "master"
-                }
-            }
-            when {
-              expression { BUILD_NUMBER == 1 }
-            }
-            steps {
-                echo '### Create ArgoCD App ? ###'
-                sh '''
-                    echo "TODO"
-                '''
-            }
-        }
+
         stage("Build (Compile App)") {
             agent {
                 node {
@@ -181,7 +166,8 @@ pipeline {
                         echo " 🏗 build found - starting it  🏗"
                         # oc start-build ${APP_NAME} --from-archive=${PACKAGE} ${BUILD_ARGS} --follow
                     fi
-                    // 
+                    
+                    
                     oc tag ${PIPELINES_NAMESPACE}/${APP_NAME}:latest ${TARGET_NAMESPACE}/${APP_NAME}:${VERSION}
                 '''
             }
@@ -250,7 +236,7 @@ pipeline {
                     steps {
                         echo '### Commit new image tag to git ###'
                         sh  '''
-
+                            # TODO ARGOCD create app?
                             # TODO - fix all this after chat with @eformat
                             git clone https://github.com/springdo/ubiquitous-journey.git
                             cd ubiquitous-journey
