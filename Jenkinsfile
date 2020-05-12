@@ -1,7 +1,5 @@
 pipeline {
-
     agent {
-        // label "" also could have been 'agent any' - that has the same meaning.
         label "master"
     }
 
@@ -12,15 +10,20 @@ pipeline {
         VERSION = "latest"
         
         JENKINS_TAG = "${JOB_NAME}.${BUILD_NUMBER}".replace("/", "-")
+        // Job name contains the branch
         JOB_NAME = "${JOB_NAME}".replace("/", "-")
 
+        env.PACKAGE = "${APP_NAME}-${VERSION}-${JENKINS_TAG}.tar.gz"
 
         IMAGE_REPOSITORY= 'image-registry.openshift-image-registry.svc:5000'
 
         GIT_SSL_NO_VERIFY = true
-        GIT_CREDENTIALS = credentials("${PIPELINES_NAMESPACE}-git-auth-ds2")
+        // Credentials bound in OpenShift
+        GIT_CREDS = credentials("${PIPELINES_NAMESPACE}-git-auth-ds2")
         NEXUS_CREDS = credentials("${PIPELINES_NAMESPACE}-nexus-password-ds")
         ARGOCD_CREDS = credentials("${PIPELINES_NAMESPACE}-argocd-token-ds")
+
+        // Nexus Artifact repo 
         NEXUS_REPO_NAME="labs-static"
     }
 
@@ -33,47 +36,64 @@ pipeline {
     }
 
     stages {
-        stage("prepare environment for master deploy") {
-            agent {
-                node {
-                    label "master"
-                }
-            }
-            when {
-              expression { GIT_BRANCH ==~ /(.*master)/ }
-            }
-            steps {
-                script {
-                    // Arbitrary Groovy Script executions can do in script tags
-                    env.VERSION = "cat package.json | jq -r .version".execute().text.minus("'").minus("'")
-                    env.PACKAGE = "${APP_NAME}-${VERSION}-${JENKINS_TAG}.tar.gz"
-                    env.PROJECT_NAMESPACE = "ds-dev"
-                    env.NODE_ENV = "test"
-                    env.E2E_TEST_ROUTE = "oc get route/${APP_NAME} --template='{{.spec.host}}' -n ${PROJECT_NAMESPACE}".execute().text.minus("'").minus("'")
-                }
-            }
-        }
-        stage("prepare environment for develop deploy") {
-            agent {
-                node {
-                    label "master"
-                }
-            }
-            when {
-              expression { GIT_BRANCH ==~ /(.*develop|.*jenkins)/ }
-            }
-            steps {
-                script {
-                    // Arbitrary Groovy Script executions can do in script tags
-                    env.VERSION = "latest"
-                    env.PACKAGE = "${APP_NAME}-${VERSION}-${JENKINS_TAG}.tar.gz"
-                    env.PROJECT_NAMESPACE = "ds-dev"
-                    env.NODE_ENV = "dev"
-                    env.E2E_TEST_ROUTE = "oc get route/${APP_NAME} --template='{{.spec.host}}' -n ${PROJECT_NAMESPACE}".execute().text.minus("'").minus("'")
-                }
-            }
-        }
 
+        stage('Perpare Environment') {
+            failFast true
+            parallel {
+                stage("Release Build") {
+                    agent {
+                        node {
+                            label "master"
+                        }
+                    }
+                    when {
+                        expression { GIT_BRANCH.startsWith("master") }
+                    }
+                    steps {
+                        script {
+                            env.TARGET_NAMESPACE = "labs-test"
+                        }
+                    }
+                }
+                stage("Sandbox Build") {
+                    agent {
+                        node {
+                            label "master"
+                        }
+                    }
+                    when {
+                        expression { GIT_BRANCH.startsWith("dev") || GIT_BRANCH.startsWith("feature") || GIT_BRANCH.startsWith("fix") }
+                    }
+                    steps {
+                        script {
+                            env.TARGET_NAMESPACE = "labs-dev"
+                            env.VERSION = "cat package.json | jq -r .version".execute().text.minus("'").minus("'")
+                            env.PACKAGE = "${APP_NAME}-${VERSION}-${JENKINS_TAG}.tar.gz"
+                            env.PROJECT_NAMESPACE = "ds-dev"
+                            env.NODE_ENV = "test"
+                            env.E2E_TEST_ROUTE = "oc get route/${APP_NAME} --template='{{.spec.host}}' -n ${PROJECT_NAMESPACE}".execute().text.minus("'").minus("'")
+                            env.APP_NAME = "pet-battle-${GIT_BRANCH}".replace("/", "-").toLowerCase()
+                        }
+                    }
+                }
+                stage("Pull Request Build") {
+                    agent {
+                        node {
+                            label "master"
+                        }
+                    }
+                    when {
+                        expression { GIT_BRANCH.startsWith("PR-") }
+                    }
+                    steps {
+                        script {
+                            env.TARGET_NAMESPACE = "labs-dev"
+                            env.APP_NAME = "pet-battle-${GIT_BRANCH}".replace("/", "-").toLowerCase()
+                        }
+                    }
+                }
+            }
+        }
         stage("ArgoCD Create App") {
             agent {
                 node {
@@ -106,7 +126,7 @@ pipeline {
                 echo '### Install deps ###'
                 // TODO - set proxy via nexus
                 // sh 'npm install'
-                sh 'npm ci'
+                sh 'npm  --registry http://${NEXUS_SERVICE_SERVICE_HOST}:${NEXUS_SERVICE_SERVICE_PORT}/repository/labs-npm ci'
 
                 echo '### Running linter ###'
                 // sh 'npm run lint'
@@ -155,7 +175,7 @@ pipeline {
                     else
                     oc new-build --binary --name=${APP_NAME} -l app=${APP_NAME} --strategy=docker --follow
                     fi
-                    oc tag ${PIPELINES_NAMESPACE}/${APP_NAME}:latest ${PROJECT_NAMESPACE}/${APP_NAME}:${VERSION}
+                    oc tag ${PIPELINES_NAMESPACE}/${APP_NAME}:latest ${TARGET_NAMESPACE}/${APP_NAME}:${VERSION}
                 '''
             }
         }
@@ -177,11 +197,11 @@ pipeline {
                 // TODO - if SANDBOX, create release in rando ns
                 sh '''
                     helm upgrade --install ${APP_NAME} helm \
-                        --namespace=${PROJECT_NAMESPACE} \
+                        --namespace=${TARGET_NAMESPACE} \
                         --set image_name=${APP_NAME}
                         --set app_tag=${VERSION} \
                         --set image_repository=${IMAGE_REPOSITORY} \
-                        --set image_namespace=${PROJECT_NAMESPACE}
+                        --set image_namespace=${TARGET_NAMESPACE}
                 '''
             }
         
@@ -210,7 +230,7 @@ pipeline {
                     git config --global user.name "Jenkins"
                     git add example-deployment/values-applications.yaml
                     git commit -m "🚀 AUTOMATED COMMIT - Deployment new app version ${JENKINS_TAG} 🚀"
-                    git push https://${GIT_CREDENTIALS_USR}:${GIT_CREDENTIALS_PSW}@github.com/springdo/ubiquitous-journey.git
+                    git push https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@github.com/springdo/ubiquitous-journey.git
                 '''
 
                 echo '### Ask ArgoCD to Sync the changes and roll it out ###'
