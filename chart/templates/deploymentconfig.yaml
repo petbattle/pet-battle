@@ -8,7 +8,7 @@ spec:
   replicas: {{ .Values.replicas }}
   revisionHistoryLimit: 10
   selector:
-    {{- include "pet-battle-api.selectorLabels" . | nindent 4 }}
+    {{- include "pet-battle.selectorLabels" . | nindent 4 }}
   strategy:
     activeDeadlineSeconds: 21600
     resources: {}
@@ -37,7 +37,7 @@ spec:
         terminationMessagePolicy: File
         volumeMounts:
           - mountPath: "/opt/app-root/src/env"
-            name: "{{ include "pet-battle.name" . }}-config"
+            name: "{{ include "pet-battle.fullname" . }}-config"
         readinessProbe:
           httpGet:
             path: /
@@ -50,9 +50,9 @@ spec:
       securityContext: {}
       terminationGracePeriodSeconds: 30
       volumes:
-      - name: "{{ include "pet-battle.name" . }}-config"
+      - name: "{{ include "pet-battle.fullname" . }}-config"
         configMap:
-          name: "{{ include "pet-battle.name" . }}-environment"
+          name: "{{ include "pet-battle.fullname" . }}-environment"
           defaultMode: 420
           items:
             - key: env
