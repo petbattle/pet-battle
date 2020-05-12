@@ -3,17 +3,15 @@
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
+  name: {{ include "pet-battle.fullname" . }}
   labels:
-    app: {{ .Values.app_name }}
-    app.kubernetes.io/component: {{ .Values.app_name }}
-    app.kubernetes.io/instance: {{ .Values.app_name }}
-  name: {{ .Values.app_name }}
+    {{- include "pet-battle.labels" . | nindent 4 }}
 spec:
   port:
     targetPort: 8080-tcp
   to:
     kind: Service
-    name: {{ .Values.app_name }}
+    name: {{ include "pet-battle.fullname" . }}
     weight: 100
   wildcardPolicy: None
 status:

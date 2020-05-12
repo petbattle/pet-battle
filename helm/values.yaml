@@ -1,4 +1,5 @@
 app_name: pet-battle
+replicas: 1
 
 # build info not used atm
 build:
