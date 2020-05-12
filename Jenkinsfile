@@ -13,8 +13,6 @@ pipeline {
         // Job name contains the branch
         JOB_NAME = "${JOB_NAME}".replace("/", "-")
 
-        env.PACKAGE = "${APP_NAME}-${VERSION}-${JENKINS_TAG}.tar.gz"
-
         IMAGE_REPOSITORY= 'image-registry.openshift-image-registry.svc:5000'
 
         GIT_SSL_NO_VERIFY = true
@@ -24,7 +22,7 @@ pipeline {
         ARGOCD_CREDS = credentials("${PIPELINES_NAMESPACE}-argocd-token-ds")
 
         // Nexus Artifact repo 
-        NEXUS_REPO_NAME="labs-static"
+        NEXUS_REPO_NAME="ds-static"
     }
 
     // The options directive is for configuration that applies to the whole job.
@@ -51,7 +49,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            env.TARGET_NAMESPACE = "labs-test"
+                            env.TARGET_NAMESPACE = "ds-test"
                         }
                     }
                 }
@@ -66,13 +64,13 @@ pipeline {
                     }
                     steps {
                         script {
-                            env.TARGET_NAMESPACE = "labs-dev"
+                            env.TARGET_NAMESPACE = "ds-dev"
+                            // in multibranch the job name is just the git branch name
+                            env.APP_NAME = "${APP_NAME}-${JOB_NAME}".replace("/", "-").toLowerCase()
                             env.VERSION = "cat package.json | jq -r .version".execute().text.minus("'").minus("'")
-                            env.PACKAGE = "${APP_NAME}-${VERSION}-${JENKINS_TAG}.tar.gz"
+                            env.PACKAGE = "${APP_NAME}-${VERSION}.tar.gz"
                             env.PROJECT_NAMESPACE = "ds-dev"
                             env.NODE_ENV = "test"
-                            env.E2E_TEST_ROUTE = "oc get route/${APP_NAME} --template='{{.spec.host}}' -n ${PROJECT_NAMESPACE}".execute().text.minus("'").minus("'")
-                            env.APP_NAME = "pet-battle-${GIT_BRANCH}".replace("/", "-").toLowerCase()
                         }
                     }
                 }
@@ -87,7 +85,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            env.TARGET_NAMESPACE = "labs-dev"
+                            env.TARGET_NAMESPACE = "ds-dev"
                             env.APP_NAME = "pet-battle-${GIT_BRANCH}".replace("/", "-").toLowerCase()
                         }
                     }
@@ -116,21 +114,21 @@ pipeline {
                     label "jenkins-slave-npm"
                 }
             }
-            when {
-                expression { GIT_BRANCH ==~ /(.*master|.*develop)/ }
-            }
+            // when {
+            //     expression { GIT_BRANCH ==~ /(.*master|.*develop)/ }
+            // }
             steps {
                 // git url: "https://github.com/springdo/pet-battle.git"
+
                 sh 'printenv'
 
                 echo '### Install deps ###'
-                // TODO - set proxy via nexus
                 // sh 'npm install'
-                sh 'npm  --registry http://${NEXUS_SERVICE_SERVICE_HOST}:${NEXUS_SERVICE_SERVICE_PORT}/repository/labs-npm ci'
+                sh 'npm  --registry http://${NEXUS_SERVICE_SERVICE_HOST}:${NEXUS_SERVICE_SERVICE_PORT}/repository/ds-npm ci'
 
                 echo '### Running linter ###'
                 // sh 'npm run lint'
-                // helm lint
+                // helm lint? probs not here as no helm in jenkins slave
 
                 echo '### Running tests ###'
                 // sh 'npm run test'
@@ -142,7 +140,6 @@ pipeline {
 
                 echo '### Packaging App for Nexus ###'
                 sh '''
-                    # PACKAGE=${APP_NAME}-0.1.0-${JENKINS_TAG}.tar.gz
                     tar -zcvf ${PACKAGE} dist Dockerfile nginx.conf
                     curl -vvv -u ${NEXUS_CREDS} --upload-file ${PACKAGE} http://${NEXUS_SERVICE_SERVICE_HOST}:${NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE}
                 '''
@@ -163,8 +160,8 @@ pipeline {
                 echo '### Get Binary from Nexus and shove it in a box ###'
                 sh  '''
                     rm -rf package-contents*
-                    # PACKAGE=${APP_NAME}-0.1.0-${JENKINS_TAG}.tar.gz
                     curl -v -f -u ${NEXUS_CREDS} http://${NEXUS_SERVICE_SERVICE_HOST}:${NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE} -o ${PACKAGE}
+
                     # TODO think about labeling of images for version purposes 
                     oc get bc ${APP_NAME}
                     if [ $? -eq 0 ]; then
