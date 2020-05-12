@@ -117,12 +117,13 @@ pipeline {
             steps {
                 // git url: "https://github.com/springdo/pet-battle.git"
 
-                sh 'printenv'
 
                 script {
-                    env.VERSION = "npm run version --silent".execute().text.minus("'").minus("'")
+                    // def retVal = sh(returnStatus: true, script: "oc -n \"${PIPELINES_NAMESPACE}\" get applications.argoproj.io \"${APP_NAME}\" -o name")
+                    env.VERSION = sh(returnStatus: true, script: "npm run version --silent")
                     env.PACKAGE = "${APP_NAME}-${VERSION}.tar.gz"
                 }
+                sh 'printenv'
 
                 echo '### Install deps ###'
                 // sh 'npm install'
