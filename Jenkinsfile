@@ -22,7 +22,7 @@ pipeline {
         ARGOCD_CREDS = credentials("${PIPELINES_NAMESPACE}-argocd-token-ds")
 
         // Nexus Artifact repo 
-        NEXUS_REPO_NAME="ds-static"
+        NEXUS_REPO_NAME="labs-static"
     }
 
     // The options directive is for configuration that applies to the whole job.
@@ -67,9 +67,6 @@ pipeline {
                             env.TARGET_NAMESPACE = "ds-dev"
                             // in multibranch the job name is just the git branch name
                             env.APP_NAME = "${APP_NAME}-${JOB_NAME}".replace("/", "-").toLowerCase()
-                            env.VERSION = "cat package.json | jq -r .version".execute().text.minus("'").minus("'")
-                            env.PACKAGE = "${APP_NAME}-${VERSION}.tar.gz"
-                            env.PROJECT_NAMESPACE = "ds-dev"
                             env.NODE_ENV = "test"
                         }
                     }
@@ -122,9 +119,14 @@ pipeline {
 
                 sh 'printenv'
 
+                script {
+                    env.VERSION = "npm run version --silent".execute().text.minus("'").minus("'")
+                    env.PACKAGE = "${APP_NAME}-${VERSION}.tar.gz"
+                }
+
                 echo '### Install deps ###'
                 // sh 'npm install'
-                sh 'npm  --registry http://${NEXUS_SERVICE_SERVICE_HOST}:${NEXUS_SERVICE_SERVICE_PORT}/repository/ds-npm ci'
+                sh 'npm  --registry http://${NEXUS_SERVICE_SERVICE_HOST}:${NEXUS_SERVICE_SERVICE_PORT}/repository/labs-npm ci'
 
                 echo '### Running linter ###'
                 // sh 'npm run lint'
