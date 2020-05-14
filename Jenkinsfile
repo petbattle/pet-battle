@@ -246,7 +246,7 @@ pipeline {
                             git config --global push.default simple
 
                             git add ${ARGOCD_CONFIG_REPO_PATH}
-                            git commit -m "🚀 AUTOMATED COMMIT - Deployment new app version ${VERSION} 🚀"
+                            git commit -m "🚀 AUTOMATED COMMIT - Deployment new app version ${VERSION} 🚀" || rc=$?
                             git remote set-url origin  https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@github.com/springdo/ubiquitous-journey.git
                             git push -u origin ${ARGOCD_CONFIG_REPO_BRANCH}
                         '''
