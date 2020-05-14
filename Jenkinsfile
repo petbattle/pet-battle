@@ -5,12 +5,11 @@ pipeline {
 
     environment {
         // GLobal Vars
-        PIPELINES_NAMESPACE = "ds-ci-cd"
-        APP_NAME = "pet-battle"
-        
+        PIPELINES_NAMESPACE = "ds-ci-cd"        
         JENKINS_TAG = "${JOB_NAME}.${BUILD_NUMBER}".replace("/", "-")
         // Job name contains the branch
         JOB_NAME = "${JOB_NAME}".replace("/", "-")
+        NAME = "pet-battle"
 
         IMAGE_REPOSITORY= 'image-registry.openshift-image-registry.svc:5000'
 
@@ -22,7 +21,7 @@ pipeline {
 
         // Nexus Artifact repo 
         NEXUS_REPO_NAME="labs-static"
-        NEXUS_HELM_REPO = "helm-charts"
+        NEXUS_REPO_HELM = "helm-charts"
     }
 
     // The options directive is for configuration that applies to the whole job.
@@ -50,7 +49,7 @@ pipeline {
                         script {
                             env.TARGET_NAMESPACE = "ds-test"
                             // app name for master is just pet-battle or something
-                            // env.APP_NAME = "${GIT_BRANCH}-${APP_NAME}".replace("/", "-").toLowerCase()
+                            env.APP_NAME = "${NAME}".replace("/", "-").toLowerCase()
                         }
                     }
                 }
@@ -67,7 +66,7 @@ pipeline {
                         script {
                             env.TARGET_NAMESPACE = "ds-dev"
                             // in multibranch the job name is just the git branch name
-                            env.APP_NAME = "${GIT_BRANCH}-${APP_NAME}".replace("/", "-").toLowerCase()
+                            env.APP_NAME = "${GIT_BRANCH}-${NAME}".replace("/", "-").toLowerCase()
                             env.NODE_ENV = "test"
                         }
                     }
@@ -84,7 +83,7 @@ pipeline {
                     steps {
                         script {
                             env.TARGET_NAMESPACE = "ds-dev"
-                            env.APP_NAME = "${GIT_BRANCH}-${APP_NAME}".replace("/", "-").toLowerCase()
+                            env.APP_NAME = "${GIT_BRANCH}-${NAME}".replace("/", "-").toLowerCase()
                         }
                     }
                 }
@@ -214,7 +213,7 @@ pipeline {
                         sh '''
                             helm upgrade --install ${APP_NAME} \
                                 --namespace=${TARGET_NAMESPACE} \
-                                http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${HELM_REPO}/${APP_NAME}-${VERSION}.tgz
+                                http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_HELM}/${APP_NAME}-${VERSION}.tgz
                         '''
                     }
                 }
