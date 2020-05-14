@@ -7,7 +7,6 @@ pipeline {
         // GLobal Vars
         PIPELINES_NAMESPACE = "ds-ci-cd"
         APP_NAME = "pet-battle"
-        VERSION = "latest"
         
         JENKINS_TAG = "${JOB_NAME}.${BUILD_NUMBER}".replace("/", "-")
         // Job name contains the branch
