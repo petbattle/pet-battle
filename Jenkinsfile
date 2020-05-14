@@ -147,12 +147,12 @@ pipeline {
                     rm -rf package-contents*
                     curl -v -f -u ${NEXUS_CREDS} http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE} -o ${PACKAGE}
 
-                    oc get bc ${APP_NAME}
+                    oc get bc ${APP_NAME} || rc=$?
                     BUILD_ARGS=" --build-arg git_commit=${GIT_COMMIT} --build-arg git_url=${GIT_URL}  --build-arg build_url=${RUN_DISPLAY_URL} --build-arg build_tag=${BUILD_TAG}"
                     echo ${BUILD_ARGS}
 
                     # TODO - ENABLE THIS AS S43 is fooooked
-                    if [ $? -eq 1 ]; then
+                    if [ $rc -eq 1 ]; then
                         echo " 🏗 no build - creating one 🏗"
                         oc new-build --binary --name=${APP_NAME} -l app=${APP_NAME} ${BUILD_ARGS} --strategy=docker
                     else
