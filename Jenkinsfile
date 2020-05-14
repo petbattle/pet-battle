@@ -191,7 +191,7 @@ pipeline {
                 sh '''
                     # package and release helm chart?
                     helm package chart/ --app-version ${VERSION} --version ${VERSION}
-                    curl -vvv -u ${NEXUS_CREDS} http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${HELM_REPO} --upload-file ${APP_NAME}-${VERSION}.tgz
+                    curl -vvv -u ${NEXUS_CREDS} http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_HELM} --upload-file ${APP_NAME}-${VERSION}.tgz
                 '''
             }
         }
