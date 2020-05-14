@@ -247,7 +247,8 @@ pipeline {
 
                             git add ${ARGOCD_CONFIG_REPO_PATH}
                             git commit -m "🚀 AUTOMATED COMMIT - Deployment new app version ${VERSION} 🚀"
-                            git push https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@github.com/springdo/ubiquitous-journey.git
+                            git remote set-url origin  https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@github.com/springdo/ubiquitous-journey.git
+                            git push -u origin ${ARGOCD_CONFIG_REPO_BRANCH}
                         '''
 
                         echo '### Ask ArgoCD to Sync the changes and roll it out ###'
@@ -311,9 +312,10 @@ pipeline {
                     git config --global user.name "Jenkins"
                     git config --global push.default simple
 
-                    git add example-deployment/values-applications.yaml
+                    git add ${ARGOCD_CONFIG_REPO_PATH}
                     git commit -m "🚀 AUTOMATED COMMIT - Deployment new app version ${VERSION} 🚀"
-                    git push https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@github.com/springdo/ubiquitous-journey.git
+                    git remote set-url origin  https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@github.com/springdo/ubiquitous-journey.git
+                    git push -u origin ${ARGOCD_CONFIG_REPO_BRANCH}
                 '''
 
                 echo '### Ask ArgoCD to Sync the changes and roll it out ###'
@@ -332,6 +334,18 @@ pipeline {
 
                 sh  '''
                     echo "merge versions back to the original GIT repo as they should be persisted?"
+
+                    yq w -i chart/Chart.yaml 'appVersion' ${VERSION}
+                    yq w -i chart/Chart.yaml 'version' ${VERSION}
+
+                    git config --global user.email "jenkins@rht-labs.bot.com"
+                    git config --global user.name "Jenkins"
+                    git config --global push.default simple
+
+                    git add chart/Chart.yaml
+                    git commit -m "🚀 AUTOMATED COMMIT - Deployment new app version ${VERSION} 🚀"
+                    git remote set-url origin https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@github.com/springdo/pet-battle.git
+                    git push
                 '''
             }
         }
