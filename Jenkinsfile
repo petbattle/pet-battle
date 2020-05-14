@@ -335,7 +335,7 @@ pipeline {
 
                 sh  '''
                     echo "merge versions back to the original GIT repo as they should be persisted?"
-
+                    git checkout ${GIT_BRANCH}
                     yq w -i chart/Chart.yaml 'appVersion' ${VERSION}
                     yq w -i chart/Chart.yaml 'version' ${VERSION}
 
