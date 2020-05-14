@@ -102,7 +102,7 @@ pipeline {
 
 
                 script {
-                    env.VERSION = sh(returnStatus: true, script: "npm run version --silent")
+                    env.VERSION = sh(returnStdout: true, script: "npm run version --silent").trim()
                     env.PACKAGE = "${APP_NAME}-${VERSION}.tar.gz"
                 }
                 sh 'printenv'
