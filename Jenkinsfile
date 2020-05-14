@@ -6,14 +6,14 @@ pipeline {
     environment {
         // GLobal Vars
         PIPELINES_NAMESPACE = "ds-ci-cd"        
-        JENKINS_TAG = "${JOB_NAME}.${BUILD_NUMBER}".replace("/", "-")
-        // Job name contains the branch
-        JOB_NAME = "${JOB_NAME}".replace("/", "-")
         NAME = "pet-battle"
 
+        // Job name contains the branch eg my-app-feature%2Fjenkins-123
+        JOB_NAME = "${JOB_NAME}".replace("%2F", "-").replace("/", "-")
         IMAGE_REPOSITORY= 'image-registry.openshift-image-registry.svc:5000'
 
         GIT_SSL_NO_VERIFY = true
+
         // Credentials bound in OpenShift
         GIT_CREDS = credentials("${PIPELINES_NAMESPACE}-git-auth")
         NEXUS_CREDS = credentials("${PIPELINES_NAMESPACE}-nexus-password")
@@ -65,7 +65,7 @@ pipeline {
                     steps {
                         script {
                             env.TARGET_NAMESPACE = "ds-dev"
-                            // in multibranch the job name is just the git branch name
+                            // ammend the name to create 'sandbox' deploys based on current branch
                             env.APP_NAME = "${GIT_BRANCH}-${NAME}".replace("/", "-").toLowerCase()
                             env.NODE_ENV = "test"
                         }
