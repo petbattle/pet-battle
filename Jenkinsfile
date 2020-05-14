@@ -110,7 +110,7 @@ pipeline {
 
                 echo '### Install deps ###'
                 // sh 'npm install'
-                sh 'npm  --registry http://${NEXUS_SERVICE_SERVICE_HOST}:${NEXUS_SERVICE_SERVICE_PORT}/repository/labs-npm ci'
+                sh 'npm  --registry http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/labs-npm ci'
 
                 echo '### Running linter ###'
                 // sh 'npm run lint'
@@ -127,7 +127,7 @@ pipeline {
                 echo '### Packaging App for Nexus ###'
                 sh '''
                     tar -zcvf ${PACKAGE} dist Dockerfile nginx.conf
-                    curl -vvv -u ${NEXUS_CREDS} --upload-file ${PACKAGE} http://${NEXUS_SERVICE_SERVICE_HOST}:${NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE}
+                    curl -vvv -u ${NEXUS_CREDS} --upload-file ${PACKAGE} http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE}
                 '''
             }
             // Post can be used both on individual stages and for the entire build.
@@ -145,7 +145,7 @@ pipeline {
                 echo '### Get Binary from Nexus and shove it in a box ###'
                 sh  '''
                     rm -rf package-contents*
-                    curl -v -f -u ${NEXUS_CREDS} http://${NEXUS_SERVICE_SERVICE_HOST}:${NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE} -o ${PACKAGE}
+                    curl -v -f -u ${NEXUS_CREDS} http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE} -o ${PACKAGE}
 
                     oc get bc ${APP_NAME}
                     BUILD_ARGS=" --build-arg git_commit=${GIT_COMMIT} --build-arg git_url=${GIT_URL}  --build-arg build_url=${RUN_DISPLAY_URL} --build-arg build_tag=${BUILD_TAG}"
@@ -195,7 +195,7 @@ pipeline {
                 sh '''
                     # package and release helm chart?
                     helm package chart/ --app-version ${VERSION} --version ${VERSION}
-                    curl -vvv -u ${NEXUS_CREDS} ${HELM_REPO} --upload-file ${APP_NAME}-${VERSION}.tgz
+                    curl -vvv -u ${NEXUS_CREDS} http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${HELM_REPO} --upload-file ${APP_NAME}-${VERSION}.tgz
                 '''
             }
         }
@@ -215,8 +215,9 @@ pipeline {
                     steps {
                         // TODO - if SANDBOX, create release in rando ns
                         sh '''
-                            helm upgrade --install ${APP_NAME} chart \
-                                --namespace=${TARGET_NAMESPACE}
+                            helm upgrade --install ${APP_NAME} \
+                                --namespace=${TARGET_NAMESPACE} \
+                                http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${HELM_REPO}/${APP_NAME}-${VERSION}.tgz
                         '''
                     }
                 }
