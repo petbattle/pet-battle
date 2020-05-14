@@ -17,13 +17,13 @@ pipeline {
 
         GIT_SSL_NO_VERIFY = true
         // Credentials bound in OpenShift
-        GIT_CREDS = credentials("${PIPELINES_NAMESPACE}-git-auth-ds2")
-        NEXUS_CREDS = credentials("${PIPELINES_NAMESPACE}-nexus-password-ds")
-        ARGOCD_CREDS = credentials("${PIPELINES_NAMESPACE}-argocd-token-ds")
+        GIT_CREDS = credentials("${PIPELINES_NAMESPACE}-git-auth")
+        NEXUS_CREDS = credentials("${PIPELINES_NAMESPACE}-nexus-password")
+        ARGOCD_CREDS = credentials("${PIPELINES_NAMESPACE}-argocd-token")
 
         // Nexus Artifact repo 
         NEXUS_REPO_NAME="labs-static"
-        NEXUS_HELM_REPO = "labs-charts"
+        NEXUS_HELM_REPO = "helm-charts"
     }
 
     // The options directive is for configuration that applies to the whole job.
@@ -98,15 +98,11 @@ pipeline {
                     label "jenkins-slave-npm"
                 }
             }
-            // when {
-            //     expression { GIT_BRANCH ==~ /(.*master|.*develop)/ }
-            // }
             steps {
                 // git url: "https://github.com/springdo/pet-battle.git"
 
 
                 script {
-                    // def retVal = sh(returnStatus: true, script: "oc -n \"${PIPELINES_NAMESPACE}\" get applications.argoproj.io \"${APP_NAME}\" -o name")
                     env.VERSION = sh(returnStatus: true, script: "npm run version --silent")
                     env.PACKAGE = "${APP_NAME}-${VERSION}.tar.gz"
                 }
@@ -143,9 +139,6 @@ pipeline {
                     label "master"
                 }
             }
-            // when {
-            //     expression { GIT_BRANCH ==~ /(.*master|.*develop)/ }
-            // }
             steps {
                 sh 'printenv'
 
@@ -161,10 +154,10 @@ pipeline {
                     # TODO - ENABLE THIS AS S43 is fooooked
                     if [ $? -eq 1 ]; then
                         echo " 🏗 no build - creating one 🏗"
-                        # oc new-build --binary --name=${APP_NAME} -l app=${APP_NAME} ${BUILD_ARGS} --strategy=docker
+                        oc new-build --binary --name=${APP_NAME} -l app=${APP_NAME} ${BUILD_ARGS} --strategy=docker
                     else
                         echo " 🏗 build found - starting it  🏗"
-                        # oc start-build ${APP_NAME} --from-archive=${PACKAGE} ${BUILD_ARGS} --follow
+                        oc start-build ${APP_NAME} --from-archive=${PACKAGE} ${BUILD_ARGS} --follow
                     fi
                     
 
@@ -179,20 +172,30 @@ pipeline {
                     label "jenkins-slave-helm"
                 }
             }
-            when {
-                expression { GIT_BRANCH ==~ /(.*master)/ }
-            }
             steps {
-                sh 'printenv'
+                sh 'printenv'  
+                sh '''
+                    helm lint chart
+                '''
+                sh '''
+                    # might be overkill...
+                    yq w -i chart/Chart.yaml 'appVersion' ${VERSION}
+                    yq w -i chart/Chart.yaml 'version' ${VERSION}
 
-                sh  '''
-                    # TODO - yq the variables              
-
-                    # package and release helm chart?
-                    helm package chart/ --app-version ${VERSION} --version ${VERSION} 
-                    curl -vvv -u ${NEXUS_CREDS} ${HELM_REPO} --upload-file ${APP_NAME}-${VERSION}.tgz     
+                    yq w -i chart/Chart.yaml 'name' ${APP_NAME}
                     
-                    # TODO - Commit the changes to git? watch for inception loop I guess               
+                    # probs point to the image inside ocp cluster or perhaps an external repo?
+                    yq w -i chart/values.yaml 'image_repository' ${IMAGE_REPOSITORY}
+                    yq w -i chart/values.yaml 'image_name' ${APP_NAME}
+                    yq w -i chart/values.yaml 'image_namespace' ${TARGET_NAMESPACE}
+                    
+                    # latest built image
+                    yq w -i chart/values.yaml 'app_tag' ${VERSION}
+                '''
+                sh '''
+                    # package and release helm chart?
+                    helm package chart/ --app-version ${VERSION} --version ${VERSION}
+                    curl -vvv -u ${NEXUS_CREDS} ${HELM_REPO} --upload-file ${APP_NAME}-${VERSION}.tgz
                 '''
             }
         }
@@ -210,17 +213,10 @@ pipeline {
                         expression { GIT_BRANCH.startsWith("dev") || GIT_BRANCH.startsWith("feature") || GIT_BRANCH.startsWith("fix") }
                     }
                     steps {
-                        sh '''
-                            helm lint chart
-                        '''
                         // TODO - if SANDBOX, create release in rando ns
                         sh '''
                             helm upgrade --install ${APP_NAME} chart \
-                                --namespace=${TARGET_NAMESPACE} \
-                                --set image_name=${APP_NAME}
-                                --set app_tag=${VERSION} \
-                                --set image_repository=${IMAGE_REPOSITORY} \
-                                --set image_namespace=${TARGET_NAMESPACE}
+                                --namespace=${TARGET_NAMESPACE}
                         '''
                     }
                 }
@@ -297,6 +293,10 @@ pipeline {
                 expression { GIT_BRANCH ==~ /(.*master)/ }
             }
             steps {
+                sh  '''
+                    echo "merge versions back to the GIT repo as they should be persisted?"
+                '''
+                
                 sh  '''
                     echo "TODO - Run ArgoCD Sync 2 for staging env"
                 '''
