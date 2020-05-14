@@ -7,7 +7,10 @@ pipeline {
         // GLobal Vars
         PIPELINES_NAMESPACE = "ds-ci-cd"        
         NAME = "pet-battle"
-
+        ARGOCD_CONFIG_REPO = "https://github.com/springdo/ubiquitous-journey.git"
+        ARGOCD_CONFIG_REPO_PATH = "example-deployment/values-applications.yaml"
+        ARGOCD_CONFIG_REPO_BRANCH = "ds-env"
+        
         // Job name contains the branch eg my-app-feature%2Fjenkins-123
         JOB_NAME = "${JOB_NAME}".replace("%2F", "-").replace("/", "-")
         IMAGE_REPOSITORY= 'image-registry.openshift-image-registry.svc:5000'
@@ -230,17 +233,21 @@ pipeline {
                         sh  '''
                             # TODO ARGOCD create app?
                             # TODO - fix all this after chat with @eformat
-                            git clone https://github.com/springdo/ubiquitous-journey.git
-                            cd ubiquitous-journey
-                            yq w -i example-deployment/values-applications.yaml 'pet_battle.app_tag' ${VERSION}
+                            git clone ${ARGOCD_CONFIG_REPO} config-repo
+                            cd config-repo
+                            git checkout ${ARGOCD_CONFIG_REPO_BRANCH}
+
+                            # TODO - @eformat we probs need to think about the app of apps approach or better logic here 
+                            # as using array[0] is 🧻
+                            yq w -i ${ARGOCD_CONFIG_REPO_PATH} 'applications[0].source_ref' ${VERSION}
 
                             git config --global user.email "jenkins@rht-labs.bot.com"
                             git config --global user.name "Jenkins"
                             git config --global push.default simple
 
-                            git add example-deployment/values-applications.yaml
+                            git add ${ARGOCD_CONFIG_REPO_PATH}
                             git commit -m "🚀 AUTOMATED COMMIT - Deployment new app version ${VERSION} 🚀"
-                            # git push https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@github.com/springdo/ubiquitous-journey.git
+                            git push https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@github.com/springdo/ubiquitous-journey.git
                         '''
 
                         echo '### Ask ArgoCD to Sync the changes and roll it out ###'
@@ -253,8 +260,8 @@ pipeline {
                             argocd app sync catz ${ARGOCD_INFO}
 
                             # todo sync child app 
-                            argocd app sync pb-front-end ${ARGOCD_INFO}
-                            argocd app wait pb-front-end ${ARGOCD_INFO}
+                            argocd app sync test-${NAME} ${ARGOCD_INFO}
+                            argocd app wait test-${NAME} ${ARGOCD_INFO}
                         '''
                     }
                 }
@@ -274,7 +281,7 @@ pipeline {
             }
             steps {
                 sh  '''
-                    echo "TODO - Run tests"
+                    echo "TODO - Run tests"                    
                 '''
             }
         }
@@ -282,7 +289,7 @@ pipeline {
         stage("Promote app to Staging") {
             agent {
                 node {
-                    label "master"
+                    label "jenkins-slave-argocd"
                 }
             }
             when {
@@ -290,11 +297,41 @@ pipeline {
             }
             steps {
                 sh  '''
-                    echo "merge versions back to the GIT repo as they should be persisted?"
+                    # TODO ARGOCD create app?
+                    # TODO - fix all this after chat with @eformat
+                    git clone ${ARGOCD_CONFIG_REPO} config-repo
+                    cd config-repo
+                    git checkout ${ARGOCD_CONFIG_REPO_BRANCH}
+
+                    # TODO - @eformat we probs need to think about the app of apps approach or better logic here 
+                    # as using array[0] is 🧻
+                    yq w -i ${ARGOCD_CONFIG_REPO_PATH} 'applications[3].source_ref' ${VERSION}
+
+                    git config --global user.email "jenkins@rht-labs.bot.com"
+                    git config --global user.name "Jenkins"
+                    git config --global push.default simple
+
+                    git add example-deployment/values-applications.yaml
+                    git commit -m "🚀 AUTOMATED COMMIT - Deployment new app version ${VERSION} 🚀"
+                    git push https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@github.com/springdo/ubiquitous-journey.git
                 '''
-                
+
+                echo '### Ask ArgoCD to Sync the changes and roll it out ###'
+                sh '''
+                    # 1. Check if app of apps exists, if not create?
+                    # 1.1 Check sync not currently in progress . if so, kill it
+
+                    # 2. sync argocd to change pushed in previous step
+                    ARGOCD_INFO="--auth-token ${ARGOCD_CREDS_PSW} --server ${ARGOCD_SERVER_SERVICE_HOST}:${ARGOCD_SERVER_SERVICE_PORT_HTTP} --insecure"
+                    argocd app sync catz ${ARGOCD_INFO}
+
+                    # todo sync child app 
+                    argocd app sync ${NAME} ${ARGOCD_INFO}
+                    argocd app wait ${NAME} ${ARGOCD_INFO}
+                '''
+
                 sh  '''
-                    echo "TODO - Run ArgoCD Sync 2 for staging env"
+                    echo "merge versions back to the original GIT repo as they should be persisted?"
                 '''
             }
         }
