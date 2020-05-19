@@ -5,9 +5,9 @@ pipeline {
 
     environment {
         // GLobal Vars
-        PIPELINES_NAMESPACE = "ds-ci-cd"        
+        PIPELINES_NAMESPACE = "${OPENSHIFT_BUILD_NAMESPACE}"        
         NAME = "pet-battle"
-        ARGOCD_CONFIG_REPO = "https://github.com/springdo/ubiquitous-journey.git"
+        ARGOCD_CONFIG_REPO = "github.com/springdo/ubiquitous-journey.git"
         ARGOCD_CONFIG_REPO_PATH = "example-deployment/values-applications.yaml"
         ARGOCD_CONFIG_REPO_BRANCH = "ds-env"
         
@@ -40,6 +40,9 @@ pipeline {
             failFast true
             parallel {
                 stage("Release Build") {
+                    options {
+                        skipDefaultCheckout(true)
+                    }
                     agent {
                         node {
                             label "master"
@@ -57,6 +60,9 @@ pipeline {
                     }
                 }
                 stage("Sandbox Build") {
+                    options {
+                        skipDefaultCheckout(true)
+                    }
                     agent {
                         node {
                             label "master"
@@ -75,6 +81,9 @@ pipeline {
                     }
                 }
                 stage("Pull Request Build") {
+                    options {
+                        skipDefaultCheckout(true)
+                    }
                     agent {
                         node {
                             label "master"
@@ -100,9 +109,6 @@ pipeline {
                 }
             }
             steps {
-                // git url: "https://github.com/springdo/pet-battle.git"
-
-
                 script {
                     env.VERSION = sh(returnStdout: true, script: "npm run version --silent").trim()
                     env.PACKAGE = "${APP_NAME}-${VERSION}.tar.gz"
@@ -135,6 +141,9 @@ pipeline {
         }
 
         stage("Bake (OpenShift Build)") {
+            options {
+                skipDefaultCheckout(true)
+            }
             agent {
                 node {
                     label "master"
@@ -202,6 +211,9 @@ pipeline {
             failFast true
             parallel {
                 stage("sandbox - helm3 publish and install"){
+                    options {
+                        skipDefaultCheckout(true)
+                    }
                     agent {
                         node {
                             label "jenkins-slave-helm"
@@ -220,6 +232,9 @@ pipeline {
                     }
                 }
                 stage("test env - ArgoCD sync") {
+                    options {
+                        skipDefaultCheckout(true)
+                    }
                     agent {
                         node {
                             label "jenkins-slave-argocd"
@@ -233,7 +248,7 @@ pipeline {
                         sh  '''
                             # TODO ARGOCD create app?
                             # TODO - fix all this after chat with @eformat
-                            git clone ${ARGOCD_CONFIG_REPO} config-repo
+                            git clone https://${ARGOCD_CONFIG_REPO} config-repo
                             cd config-repo
                             git checkout ${ARGOCD_CONFIG_REPO_BRANCH}
 
@@ -247,7 +262,7 @@ pipeline {
 
                             git add ${ARGOCD_CONFIG_REPO_PATH}
                             git commit -m "🚀 AUTOMATED COMMIT - Deployment new app version ${VERSION} 🚀" || rc=$?
-                            git remote set-url origin  https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@github.com/springdo/ubiquitous-journey.git
+                            git remote set-url origin  https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@${ARGOCD_CONFIG_REPO}
                             git push -u origin ${ARGOCD_CONFIG_REPO_BRANCH}
                         '''
 
@@ -315,7 +330,7 @@ pipeline {
                     git add ${ARGOCD_CONFIG_REPO_PATH}
                     # grabbing the error code incase there is nothing to commit and allow jenkins proceed
                     git commit -m "🚀 AUTOMATED COMMIT - Deployment new app version ${VERSION} 🚀" || rc=$?
-                    git remote set-url origin  https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@github.com/springdo/ubiquitous-journey.git
+                    git remote set-url origin  https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@${ARGOCD_CONFIG_REPO}
                     git push -u origin ${ARGOCD_CONFIG_REPO_BRANCH}
                 '''
 
@@ -339,12 +354,8 @@ pipeline {
                     yq w -i chart/Chart.yaml 'appVersion' ${VERSION}
                     yq w -i chart/Chart.yaml 'version' ${VERSION}
 
-                    git config --global user.email "jenkins@rht-labs.bot.com"
-                    git config --global user.name "Jenkins"
-                    git config --global push.default simple
-
                     git add chart/Chart.yaml
-                    git commit -m "🚀 AUTOMATED COMMIT - Deployment new app version ${VERSION} 🚀" || rc=$?
+                    git commit -m "🚀 AUTOMATED COMMIT - Deployment of new app version ${VERSION} 🚀" || rc=$?
                     git remote set-url origin https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@github.com/springdo/pet-battle.git
                     git push
                 '''
