@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pb-subscriptions
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: dev-placementrule
+  namespace: pb-subscriptions
+  generation: 1
+  labels:
+    purpose: pb-subscriptions
+spec:
+  clusterLabels:
+    matchLabels:
+      cloud: Amazon
+  #clusterReplicas: 1  #Apply to how many matched clusters, default is ALL
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: production-placementrule
+  namespace: pb-subscriptions
+  generation: 1
+  labels:
+    purpose: pb-subscriptions
+spec:
+  clusterLabels:
+    matchLabels:
+      cloud: IBM
+  #clusterReplicas: 1  #Apply to how many matched clusters, default is ALL

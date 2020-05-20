@@ -1,0 +1,27 @@
+# Create a Namespace to hold the Channel "dev"
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pet-battle-ch
+spec:
+---
+# Create a Channel that declares resources that can be deployed
+# Channel can be a Namespace, Object Store Bucket, or Helm Repo
+apiVersion: apps.open-cluster-management.io/v1
+kind: Channel
+metadata:
+  name: nexus-charts
+  namespace: pet-battle-ch
+spec:
+  type: HelmRepo
+  pathname: https://nexus-vodafone-cicd.apps.demo-app-cluster.walkersdev.co.uk/repository/helm-charts/
+  configRef:
+    name: insecure-skip-verify
+---
+apiVersion: v1
+data:
+  insecureSkipVerify: 'true'
+kind: ConfigMap
+metadata:
+  name: insecure-skip-verify
+  namespace: pet-battle-ch
