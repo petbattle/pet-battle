@@ -315,7 +315,7 @@ pipeline {
                 sh  '''
                     # TODO ARGOCD create app?
                     # TODO - fix all this after chat with @eformat
-                    git clone ${ARGOCD_CONFIG_REPO} config-repo
+                    git clone https://${ARGOCD_CONFIG_REPO} config-repo
                     cd config-repo
                     git checkout ${ARGOCD_CONFIG_REPO_BRANCH}
 
