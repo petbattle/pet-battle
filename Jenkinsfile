@@ -5,7 +5,7 @@ pipeline {
 
     environment {
         // GLobal Vars
-        PIPELINES_NAMESPACE = "${OPENSHIFT_BUILD_NAMESPACE}"        
+        // PIPELINES_NAMESPACE = "${OPENSHIFT_BUILD_NAMESPACE}"        
         NAME = "pet-battle"
         ARGOCD_CONFIG_REPO = "github.com/springdo/ubiquitous-journey.git"
         ARGOCD_CONFIG_REPO_PATH = "example-deployment/values-applications.yaml"
@@ -18,9 +18,9 @@ pipeline {
         GIT_SSL_NO_VERIFY = true
 
         // Credentials bound in OpenShift
-        GIT_CREDS = credentials("${PIPELINES_NAMESPACE}-git-auth")
-        NEXUS_CREDS = credentials("${PIPELINES_NAMESPACE}-nexus-password")
-        ARGOCD_CREDS = credentials("${PIPELINES_NAMESPACE}-argocd-token")
+        GIT_CREDS = credentials("${OPENSHIFT_BUILD_NAMESPACE}-git-auth")
+        NEXUS_CREDS = credentials("${OPENSHIFT_BUILD_NAMESPACE}-nexus-password")
+        ARGOCD_CREDS = credentials("${OPENSHIFT_BUILD_NAMESPACE}-argocd-token")
 
         // Nexus Artifact repo 
         NEXUS_REPO_NAME="labs-static"
@@ -168,7 +168,7 @@ pipeline {
                     
                     echo " 🏗 build found - starting it  🏗"
                     oc start-build ${APP_NAME} --from-archive=${PACKAGE} ${BUILD_ARGS} --follow
-                    oc tag ${PIPELINES_NAMESPACE}/${APP_NAME}:latest ${TARGET_NAMESPACE}/${APP_NAME}:${VERSION}
+                    oc tag ${OPENSHIFT_BUILD_NAMESPACE}/${APP_NAME}:latest ${TARGET_NAMESPACE}/${APP_NAME}:${VERSION}
                 '''
             }
         }
