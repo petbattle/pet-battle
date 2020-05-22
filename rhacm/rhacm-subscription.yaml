@@ -1,22 +1,50 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: pb-subscriptions
+  name: staging-pb-subs
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prod-pb-subs
 ---
 apiVersion: apps.open-cluster-management.io/v1
 kind: Subscription
 metadata:
   labels:
-    purpose: pb-subscriptions
+    purpose: prod-pb-subs
   name: pet-battle
-  namespace: pb-subscriptions
+  namespace: prod-pb-subs
   annotations:
 spec:
   channel: pet-battle-ch/nexus-charts
   name: pet-battle
+  packageOverrides:
+    config_map: "'http://blah-blah.apps.s43.core.rht-labs.com'"
   packageFilter:
     version: '1.0.0'
   placement:
     placementRef:
-      name: dev-placementrule
+      name: prod-placementrule
+      kind: PlacementRule
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: Subscription
+metadata:
+  labels:
+    purpose: staging-pb-subs
+    app: pet-battle-staging
+  name: staging-pet-battle
+  namespace: staging-pb-subs
+  annotations:
+spec:
+  channel: pet-battle-ch/nexus-charts
+  name: pet-battle
+  packageOverrides:
+    config_map: "'http://blah-blah.apps.s43.core.rht-labs.com'"
+  packageFilter:
+    version: '1.0.x'
+  placement:
+    placementRef:
+      name: staging-placementrule
       kind: PlacementRule

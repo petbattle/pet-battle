@@ -10,11 +10,11 @@ spec:
 apiVersion: apps.open-cluster-management.io/v1
 kind: Channel
 metadata:
-  name: nexus-charts
+  name: pet-battle-ch
   namespace: pet-battle-ch
 spec:
   type: HelmRepo
-  pathname: https://nexus-vodafone-cicd.apps.demo-app-cluster.walkersdev.co.uk/repository/helm-charts/
+  pathname: https://springdo.github.io/pet-battle/
   configRef:
     name: insecure-skip-verify
 ---
