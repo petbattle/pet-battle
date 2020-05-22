@@ -1,16 +1,14 @@
-# Create a Namespace to hold the Channel "dev"
+---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: pet-battle-ch
 spec:
 ---
-# Create a Channel that declares resources that can be deployed
-# Channel can be a Namespace, Object Store Bucket, or Helm Repo
 apiVersion: apps.open-cluster-management.io/v1
 kind: Channel
 metadata:
-  name: pet-battle-ch
+  name: nexus-charts
   namespace: pet-battle-ch
 spec:
   type: HelmRepo
