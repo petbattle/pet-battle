@@ -21,6 +21,7 @@ spec:
   clusterLabels:
     matchLabels:
       env: staging
+      cloud: Amazon
 ---
 apiVersion: apps.open-cluster-management.io/v1
 kind: PlacementRule
@@ -34,3 +35,4 @@ spec:
   clusterLabels:
     matchLabels:
       env: prod
+      cloud: IBM

@@ -14,19 +14,23 @@ kind: Subscription
 metadata:
   labels:
     purpose: prod-pb-subs
-  name: pet-battle
+  name: pet-battle-api
   namespace: prod-pb-subs
   annotations:
 spec:
   channel: pet-battle-ch/nexus-charts
-  name: pet-battle
+  name: pet-battle-api
   packageOverrides:
-    - packageName: pet-battle
-      packageAlias: pet-battle
+    - packageName: pet-battle-api
+      packageAlias: pet-battle-api
       packageOverrides:
         - path: spec
           value:
-            config_map: "'http://pet-battle-api-prod-pb-subs.apps.c100-e.eu-gb.containers.cloud.ibm.com'"
+            appName: pet-battle-api
+            image_repository: quay.io
+            image_name: pet-battle-api
+            image_namespace: eformat
+            image_version: latest
   packageFilter:
     version: '1.0.0'
   placement:
@@ -39,22 +43,26 @@ kind: Subscription
 metadata:
   labels:
     purpose: staging-pb-subs
-    app: staging-pet-battle
-  name: staging-pet-battle
+    app: staging-pet-battle-api
+  name: staging-pet-battle-api
   namespace: staging-pb-subs
   annotations:
 spec:
   channel: pet-battle-ch/nexus-charts
-  name: pet-battle
+  name: pet-battle-api
   packageOverrides:
-    - packageName: pet-battle
-      packageAlias: staging-pet-battle
+    - packageName: pet-battle-api
+      packageAlias: staging-pet-battle-api
       packageOverrides:
         - path: spec
           value:
-            config_map: "'staging-pet-battle-api-staging-pb-subs.apps.demo-app-cluster.walkersdev.co.uk'"
+            appName: pet-battle-api
+            image_repository: quay.io
+            image_name: pet-battle-api
+            image_namespace: eformat
+            image_version: latest
   packageFilter:
-    version: '>1.0.0'
+    version: '1.0.0'
   placement:
     placementRef:
       name: staging-placementrule
