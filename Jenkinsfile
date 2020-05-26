@@ -186,7 +186,6 @@ pipeline {
                     helm lint chart
                 '''
                 sh '''
-                    git checkout gh-pages
                     # might be overkill...
                     yq w -i chart/Chart.yaml 'appVersion' ${VERSION}
                     yq w -i chart/Chart.yaml 'version' ${VERSION}
@@ -206,7 +205,10 @@ pipeline {
                     
                     # RHACM and nexus issue - uri is not complete hence git hack below
                     # curl -v -f -u ${NEXUS_CREDS} http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_HELM}/ --upload-file ${APP_NAME}-${VERSION}.tgz
-
+                    
+                    
+                    git stash 
+                    git checkout gh-pages
 
                     cat << EOF | yq m -a -x - index.yaml > undex.yaml
 ---
