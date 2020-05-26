@@ -205,8 +205,11 @@ pipeline {
                     
                     # RHACM and nexus issue - uri is not complete hence git hack below
                     # curl -v -f -u ${NEXUS_CREDS} http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_HELM}/ --upload-file ${APP_NAME}-${VERSION}.tgz
-                    
-                    
+
+                    git config --global user.email "jenkins@rht-labs.bot.com"
+                    git config --global user.name "Jenkins"
+                    git config --global push.default simple
+
                     git stash 
                     git checkout gh-pages
 
@@ -226,9 +229,7 @@ entries:
     version: ${VERSION}
 EOF
                     mv undex.yaml index.yaml
-                    git config --global user.email "jenkins@rht-labs.bot.com"
-                    git config --global user.name "Jenkins"
-                    git config --global push.default simple
+
                     git add index.yaml ${APP_NAME}*.tgz
                     git commit -m "🚀 AUTOMATED COMMIT - Deployment of new app version ${VERSION} 🚀" || rc=$?
                     git remote set-url origin https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@github.com/${GIT_CREDS_USR}/${NAME}.git
@@ -265,7 +266,7 @@ EOF
             }
             steps {
                 sh  '''
-                    cd rhacm 
+                    git checkout ${RHACM_CONFIG_REPO_BRANCH}
                     yq w -i ${RHACM_CONFIG_REPO_PATH} 'spec.packageFilter.version' ${VERSION}
 
                     git config --global user.email "jenkins@rht-labs.bot.com"
