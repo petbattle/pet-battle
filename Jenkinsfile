@@ -169,7 +169,7 @@ pipeline {
                     
                     echo " 🏗 build found - starting it  🏗"
                     oc start-build ${APP_NAME} --from-archive=${PACKAGE} ${BUILD_ARGS} --follow
-                    oc tag ${OPENSHIFT_BUILD_NAMESPACE}/${APP_NAME}:latest ${TARGET_NAMESPACE}/${APP_NAME}:${VERSION}
+                    # oc tag ${OPENSHIFT_BUILD_NAMESPACE}/${APP_NAME}:latest ${TARGET_NAMESPACE}/${APP_NAME}:${VERSION}
                 '''
             }
         }
@@ -193,7 +193,6 @@ pipeline {
                     yq w -i chart/Chart.yaml 'name' ${APP_NAME}
                     
                     # probs point to the image inside ocp cluster or perhaps an external repo?
-                    yq w -i chart/values.yaml 'image_repository' quay.io
                     yq w -i chart/values.yaml 'image_name' ${APP_NAME}
                     yq w -i chart/values.yaml 'image_namespace' dschromeos
                     
