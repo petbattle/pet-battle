@@ -162,10 +162,10 @@ pipeline {
                     oc get bc ${APP_NAME} || rc=$?
                     # dirty hack so i don't have to oc patch the bc for the new version ...
                     oc delete bc ${APP_NAME} || rc=$?
-                    if [ $rc -eq 1 ]; then
+                    # if [ $rc -eq 1 ]; then
                         echo " 🏗 no build - creating one 🏗"
                         oc new-build --binary --name=${APP_NAME} -l app=${APP_NAME} ${BUILD_ARGS} --strategy=docker --push-secret=dschromeos-vodafone-poc-pull-secret --to-docker --to="quay.io/dschromeos/pet-battle:${VERSION}"
-                    fi
+                    # fi
                     
                     echo " 🏗 build found - starting it  🏗"
                     oc start-build ${APP_NAME} --from-archive=${PACKAGE} ${BUILD_ARGS} --follow
