@@ -52,7 +52,7 @@ spec:
       packageOverrides:
         - path: spec
           value:
-            config_map: "'staging-pet-battle-api-staging-pb-subs.apps.demo-app-cluster.walkersdev.co.uk'"
+            config_map: "'http://staging-pet-battle-api-staging-pb-subs.apps.demo-app-cluster.walkersdev.co.uk'"
   packageFilter:
     version: '>1.0.0'
   placement:
