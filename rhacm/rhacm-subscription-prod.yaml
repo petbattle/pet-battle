@@ -1,0 +1,24 @@
+apiVersion: apps.open-cluster-management.io/v1
+kind: Subscription
+metadata:
+  labels:
+    purpose: prod-pb-subs
+  name: pet-battle
+  namespace: prod-pb-subs
+  annotations:
+spec:
+  channel: pet-battle-ch/nexus-charts
+  name: pet-battle
+  packageOverrides:
+    - packageName: pet-battle
+      packageAlias: pet-battle
+      packageOverrides:
+        - path: spec
+          value:
+            config_map: "'http://pet-battle-api-prod-pb-subs.demo-app-cluster-561196-055b85e3f49b6af82fece1e042b67a5d-0000.eu-gb.containers.appdomain.cloud'"
+  packageFilter:
+    version: 1.0.1
+  placement:
+    placementRef:
+      name: prod-placementrule
+      kind: PlacementRule
