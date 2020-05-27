@@ -1,0 +1,23 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prod-pb-subs
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: prod-placementrule
+  namespace: prod-pb-subs
+  generation: 1
+  labels:
+    purpose: prod-pb-subs
+spec:
+  clusterConditions:
+    - type: OK
+  clusterSelector:
+    matchExpressions: []
+    matchLabels:
+      env: 'prod'
+      cloud: 'IBM'
+  clusterReplicas: 1

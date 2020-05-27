@@ -7,6 +7,6 @@ metadata:
     apps.open-cluster-management.io/github-path: rhacm/production/
     apps.open-cluster-management.io/github-branch: testing
 spec:
-  channel: pet-battle-ch/pet-battle-git
+  channel: pet-battle-ch/pet-battle-gitops
   placement:
     local: true

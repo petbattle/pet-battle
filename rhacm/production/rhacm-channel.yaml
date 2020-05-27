@@ -8,8 +8,8 @@ spec:
 apiVersion: apps.open-cluster-management.io/v1
 kind: Channel
 metadata:
-  name: pet-battle-gitops
+  name: nexus-charts
   namespace: pet-battle-ch
 spec:
-  type: GitHub
-  pathname: https://github.com/dschromeos/pet-battle.git
+  type: HelmRepo
+  pathname: https://dschromeos.github.io/pet-battle/
