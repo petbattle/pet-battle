@@ -2,7 +2,7 @@
 apiVersion: app.k8s.io/v1beta1
 kind: Application
 metadata:
-  name: pet-battle
+  name: staging-pet-battle
   namespace: staging-pb-subs
 spec:
   selector:
