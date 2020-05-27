@@ -37,22 +37,22 @@ oc scale dc/pet-battle --replicas=0
 oc scale dc/pet-battle --replicas=10
 ```
 
-## Build and Deploy on OpenShift
+## Deploy on OpenShift using RH Advanced Cluster Managemnt
 
-1. Build it
+1. Log in to the hub cluster in which RHACM is installed
+
+2. Apply the cluster config using the following command. This sets up two channels, one for the helm-charts and one for the git repo to allow us use helm lifecycle for managing the apps deployment and also harness gitops for audit and traceability.
 
 ```sh
-oc process -f buildconfig.yaml \
-    -p NAME=pet-battle \
-    -p SOURCE_REPOSITORY_URL=https://github.com/springdo/pet-battle.git \
-    | oc apply -n springdo -f -
+cat rhacm/rhacm-* | oc apply -f-
 ```
 
-2. Run it
+1. On the acm console you should now have a subscription tracking the helm repo and one tracking git. There is a subscription for `rhacm/staging` `rhacm/production`. Any changes to the yaml files in here will be reflected in the deployment on RHACM. For example, in the `rhacm/production/rhacm-subscription.yaml` you could update the helm chart version as part of a cd/cd workflow eg from `1.0.1` to `1.0.2`
 
 ```
-oc process -f deploymentconfig.yaml \
-    -p NAME=pet-battle \
-    -p IMAGE=quay.io/springdo/pet-battle-nginx:latest \
-    | oc apply -n springdo -f -
+spec:
+  channel: pet-battle-ch/cat-app
+  name: pet-battle
+  packageFilter:
+    version: 1.0.2
 ```
