@@ -16,7 +16,7 @@ metadata:
   namespace: staging-pb-subs
   annotations:
     apps.open-cluster-management.io/github-path: rhacm/staging/
-    apps.open-cluster-management.io/github-branch: testing
+    apps.open-cluster-management.io/github-branch: master
 spec:
   channel: pet-battle-ch/pet-battle-gitops
   placement:
@@ -29,7 +29,7 @@ metadata:
   namespace: prod-pb-subs
   annotations:
     apps.open-cluster-management.io/github-path: rhacm/production/
-    apps.open-cluster-management.io/github-branch: testing
+    apps.open-cluster-management.io/github-branch: master
 spec:
   channel: pet-battle-ch/pet-battle-gitops
   placement:
