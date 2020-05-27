@@ -23,5 +23,3 @@ metadata:
 spec:
   type: HelmRepo
   pathname: https://dschromeos.github.io/pet-battle/
----
-
