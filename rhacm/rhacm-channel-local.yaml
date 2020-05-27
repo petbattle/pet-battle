@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pet-battle-ch
+spec:
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: Channel
+metadata:
+  name: pet-battle-git
+  namespace: pet-battle-ch
+spec:
+  type: GitHub
+  pathname: https://github.com/dschromeos/pet-battle.git

@@ -1,0 +1,12 @@
+apiVersion: apps.open-cluster-management.io/v1
+kind: Subscription
+metadata:
+  name: pet-battle-git
+  namespace: pet-battle-ch
+  annotations:
+    apps.open-cluster-management.io/github-path: rhacm/production/
+    apps.open-cluster-management.io/github-branch: testing
+spec:
+  channel: pet-battle-ch/pet-battle-git
+  placement:
+    local: true

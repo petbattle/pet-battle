@@ -18,10 +18,14 @@ metadata:
   labels:
     purpose: staging-pb-subs
 spec:
-  clusterLabels:
+  clusterConditions:
+    - type: OK
+  clusterSelector:
+    matchExpressions: []
     matchLabels:
-      env: staging
-      cloud: Amazon
+      env: 'staging'
+      cloud: 'Amazon'
+  clusterReplicas: 1
 ---
 apiVersion: apps.open-cluster-management.io/v1
 kind: PlacementRule
@@ -32,7 +36,11 @@ metadata:
   labels:
     purpose: prod-pb-subs
 spec:
-  clusterLabels:
+  clusterConditions:
+    - type: OK
+  clusterSelector:
+    matchExpressions: []
     matchLabels:
-      env: prod
-      cloud: IBM
+      env: 'prod'
+      cloud: 'IBM'
+  clusterReplicas: 1
