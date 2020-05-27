@@ -4,14 +4,32 @@ kind: Namespace
 metadata:
   name: prod-pb-subs
 ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: staging-pb-subs
+---
 apiVersion: apps.open-cluster-management.io/v1
 kind: Subscription
 metadata:
-  name: pet-battle-subs-local
-  namespace: prod-pb-subs
+  name: pet-battle-subs-git-staging
+  namespace: staging-pb-subs
   annotations:
     apps.open-cluster-management.io/github-path: rhacm/production/
-    apps.open-cluster-management.io/github-branch: testing
+    apps.open-cluster-management.io/github-branch: master
+spec:
+  channel: pet-battle-ch/pet-battle-gitops
+  placement:
+    local: true
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: Subscription
+metadata:
+  name: pet-battle-subs-git-prod
+  namespace: prod-pb-subs
+  annotations:
+    apps.open-cluster-management.io/github-path: rhacm/staging/
+    apps.open-cluster-management.io/github-branch: master
 spec:
   channel: pet-battle-ch/pet-battle-gitops
   placement:

@@ -5,6 +5,7 @@ metadata:
   name: pet-battle-ch
 spec:
 ---
+# this channel is used to point to the folders staging and prod for a gitops approach to using helm
 apiVersion: apps.open-cluster-management.io/v1
 kind: Channel
 metadata:
@@ -17,7 +18,7 @@ spec:
 apiVersion: apps.open-cluster-management.io/v1
 kind: Channel
 metadata:
-  name: helm-charts
+  name: cat-app
   namespace: pet-battle-ch
 spec:
   type: HelmRepo

@@ -7,7 +7,7 @@ pipeline {
         // GLobal Vars
         // PIPELINES_NAMESPACE = "${OPENSHIFT_BUILD_NAMESPACE}"        
         NAME = "pet-battle"
-        RHACM_CONFIG_REPO_PATH = "rhacm/rhacm-subscription-prod.yaml"
+        RHACM_CONFIG_REPO_PATH = "rhacm/production/rhacm-subscription.yaml"
         RHACM_CONFIG_REPO_BRANCH = "master"
         
         // Job name contains the branch eg my-app-feature%2Fjenkins-123

@@ -13,7 +13,7 @@ metadata:
   namespace: prod-pb-subs
   annotations:
 spec:
-  channel: pet-battle-ch/helm-charts
+  channel: pet-battle-ch/cat-app
   name: pet-battle-api
   packageOverrides:
     - packageName: pet-battle-api

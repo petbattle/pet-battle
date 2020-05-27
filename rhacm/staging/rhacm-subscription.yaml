@@ -14,7 +14,7 @@ metadata:
   namespace: staging-pb-subs
   annotations:
 spec:
-  channel: pet-battle-ch/helm-charts
+  channel: pet-battle-ch/cat-app
   name: pet-battle
   packageOverrides:
     - packageName: pet-battle
