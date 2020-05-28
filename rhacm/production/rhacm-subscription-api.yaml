@@ -22,7 +22,7 @@ spec:
             image_namespace: eformat
             image_version: latest
   packageFilter:
-    version: '1.0.0'
+    version: 1.0.2
   placement:
     placementRef:
       name: prod-placementrule

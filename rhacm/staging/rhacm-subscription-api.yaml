@@ -17,13 +17,12 @@ spec:
       packageOverrides:
         - path: spec
           value:
-            appName: pet-battle-api
             image_repository: quay.io
             image_name: pet-battle-api
             image_namespace: eformat
             image_version: latest
   packageFilter:
-    version: '1.0.0'
+    version: 1.0.2
   placement:
     placementRef:
       name: staging-placementrule
