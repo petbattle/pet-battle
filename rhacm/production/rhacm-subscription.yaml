@@ -17,7 +17,7 @@ spec:
       value:
         config_map: "'http://pet-battle-api-prod-pb-subs.demo-app-cluster-561196-055b85e3f49b6af82fece1e042b67a5d-0000.eu-gb.containers.appdomain.cloud'"
   packageFilter:
-    version: 1.0.6
+    version: 1.0.7
   placement:
     placementRef:
       name: prod-placementrule
