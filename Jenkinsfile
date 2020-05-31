@@ -254,7 +254,7 @@ pipeline {
 
                             # TODO - @eformat we probs need to think about the app of apps approach or better logic here 
                             # as using array[0] is 🧻
-                            yq w -i ${ARGOCD_CONFIG_REPO_PATH} 'applications[0].source_ref' ${VERSION}
+                            yq w -i ${ARGOCD_CONFIG_REPO_PATH} 'applications.name==${APP_NAME}.source_ref' ${VERSION}
 
                             git config --global user.email "jenkins@rht-labs.bot.com"
                             git config --global user.name "Jenkins"
@@ -321,7 +321,7 @@ pipeline {
 
                     # TODO - @eformat we probs need to think about the app of apps approach or better logic here 
                     # as using array[0] is 🧻
-                    yq w -i ${ARGOCD_CONFIG_REPO_PATH} 'applications[3].source_ref' ${VERSION}
+                    yq w -i ${ARGOCD_CONFIG_REPO_PATH} 'applications.name==${APP_NAME}.source_ref' ${VERSION}
 
                     git config --global user.email "jenkins@rht-labs.bot.com"
                     git config --global user.name "Jenkins"
