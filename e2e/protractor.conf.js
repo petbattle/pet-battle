@@ -11,7 +11,9 @@ exports.config = {
     browserName: process.env.PROTRACTOR_BROWSER || 'chrome',
     chromeOptions: {
       binary: process.env.PROTRACTOR_CHROME_BIN || undefined,
-      args: process.env.PROTRACTOR_CHROME_ARGS ? JSON.parse(process.env.PROTRACTOR_CHROME_ARGS) : ['lang=en-US'],
+      args: process.env.PROTRACTOR_CHROME_ARGS
+        ? JSON.parse(process.env.PROTRACTOR_CHROME_ARGS)
+        : ['--window-size=1280x800', '--headless', '--disable-gpu', '--no-sandbox'],
       prefs: {
         intl: { accept_languages: 'en-US' }
       }
