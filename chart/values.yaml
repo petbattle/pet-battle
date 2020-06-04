@@ -18,4 +18,4 @@ app_tag: latest
 # OCP route
 route: true
 # custom end point injected by config map. This is likely to changed
-config_map: "'http://cats-pet-battle-api.apps.s43.core.rht-labs.com'"
+config_map: "'http://pet-battle-api-cats.apps.s44.core.rht-labs.com'"
