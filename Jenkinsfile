@@ -9,7 +9,7 @@ pipeline {
         NAME = "pet-battle"
         ARGOCD_CONFIG_REPO = "github.com/springdo/ubiquitous-journey.git"
         ARGOCD_CONFIG_REPO_PATH = "example-deployment/values-applications.yaml"
-        ARGOCD_CONFIG_REPO_BRANCH = "ds-env"
+        ARGOCD_CONFIG_REPO_BRANCH = "my-env"
         
         // Job name contains the branch eg my-app-feature%2Fjenkins-123
         JOB_NAME = "${JOB_NAME}".replace("%2F", "-").replace("/", "-")
@@ -53,7 +53,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            env.TARGET_NAMESPACE = "ds-test"
+                            env.TARGET_NAMESPACE = "my-test"
                             // app name for master is just pet-battle or something
                             env.APP_NAME = "${NAME}".replace("/", "-").toLowerCase()
                         }
@@ -73,7 +73,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            env.TARGET_NAMESPACE = "ds-dev"
+                            env.TARGET_NAMESPACE = "my-dev"
                             // ammend the name to create 'sandbox' deploys based on current branch
                             env.APP_NAME = "${GIT_BRANCH}-${NAME}".replace("/", "-").toLowerCase()
                             env.NODE_ENV = "test"
@@ -94,7 +94,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            env.TARGET_NAMESPACE = "ds-dev"
+                            env.TARGET_NAMESPACE = "my-dev"
                             env.APP_NAME = "${GIT_BRANCH}-${NAME}".replace("/", "-").toLowerCase()
                         }
                     }
