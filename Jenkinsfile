@@ -56,8 +56,8 @@ pipeline {
                         script {
                             env.TARGET_NAMESPACE = "springdo"
                             // External image push registry info
-                            IMAGE_REPOSITORY = 'quay.io'
-                            QUAY_PUSH_SECRET = "springdo-petbattlepipeline-secret"
+                            env.IMAGE_REPOSITORY = "quay.io"
+                            env.QUAY_PUSH_SECRET = "springdo-petbattlepipeline-secret"
                             // app name for master is just pet-battle or something
                             env.APP_NAME = "${NAME}".replace("/", "-").toLowerCase()
                         }
