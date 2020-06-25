@@ -10,11 +10,16 @@ pipeline {
         ARGOCD_CONFIG_REPO = "github.com/springdo/ubiquitous-journey.git"
         ARGOCD_CONFIG_REPO_PATH = "example-deployment/values-applications.yaml"
         ARGOCD_CONFIG_REPO_BRANCH = "ds-env"
-        STAGING = "ds-staging"
+
+        QUAY_PUSH_SECRET = "springdo-petbattlepipeline-secret"
+
         
         // Job name contains the branch eg ds-app-feature%2Fjenkins-123
         JOB_NAME = "${JOB_NAME}".replace("%2F", "-").replace("/", "-")
-        IMAGE_REPOSITORY= 'image-registry.openshift-image-registry.svc:5000'
+        
+        // External image push registry info
+        IMAGE_REPOSITORY = 'quay.io'
+        IMAGE_NAMESPACE = "springdo"
 
         GIT_SSL_NO_VERIFY = true
 
@@ -75,6 +80,9 @@ pipeline {
                     steps {
                         script {
                             env.TARGET_NAMESPACE = "ds-dev"
+                            // Sandbox registry deets
+                            env.IMAGE_NAMESPACE = "ds-dev"
+                            env.IMAGE_REPOSITORY = 'image-registry.openshift-image-registry.svc:5000'
                             // ammend the name to create 'sandbox' deploys based on current branch
                             env.APP_NAME = "${GIT_BRANCH}-${NAME}".replace("/", "-").toLowerCase()
                             env.NODE_ENV = "test"
@@ -96,6 +104,8 @@ pipeline {
                     steps {
                         script {
                             env.TARGET_NAMESPACE = "ds-dev"
+                            env.IMAGE_NAMESPACE = "ds-dev"
+                            env.IMAGE_REPOSITORY = 'image-registry.openshift-image-registry.svc:5000'
                             env.APP_NAME = "${GIT_BRANCH}-${NAME}".replace("/", "-").toLowerCase()
                         }
                     }
@@ -161,16 +171,20 @@ pipeline {
                     BUILD_ARGS=" --build-arg git_commit=${GIT_COMMIT} --build-arg git_url=${GIT_URL}  --build-arg build_url=${RUN_DISPLAY_URL} --build-arg build_tag=${BUILD_TAG}"
                     echo ${BUILD_ARGS}
                     
-                    oc get bc ${APP_NAME} || rc=$?
-                    if [ $rc -eq 1 ]; then
-                        echo " 🏗 no build - creating one 🏗"
+                    # oc get bc ${APP_NAME} || rc=$?
+                    # dirty hack so i don't have to oc patch the bc for the new version when pushing to quay ...
+                    oc delete bc ${APP_NAME} || rc=$?
+                    if [[ $TARGET_NAMESPACE == *"dev"* ]]; then
+                        echo "🏗 Creating a sandbox build for inside the cluster 🏗"
                         oc new-build --binary --name=${APP_NAME} -l app=${APP_NAME} ${BUILD_ARGS} --strategy=docker
+                    else
+                        echo "🏗 Creating a potential build that could go all the way so pushing externally 🏗"
+                        oc new-build --binary --name=${APP_NAME} -l app=${APP_NAME} ${BUILD_ARGS} --strategy=docker --push-secret=${QUAY_PUSH_SECRET} --to-docker --to="${IMAGE_REPOSITORY}/${IMAGE_NAMESPACE}/${APP_NAME}:${VERSION}"
                     fi
                     
-                    echo " 🏗 build found - starting it  🏗"
                     oc start-build ${APP_NAME} --from-archive=${PACKAGE} ${BUILD_ARGS} --follow
+                    # used for internal sandbox build ....
                     oc tag ${OPENSHIFT_BUILD_NAMESPACE}/${APP_NAME}:latest ${TARGET_NAMESPACE}/${APP_NAME}:${VERSION}
-                    oc tag ${OPENSHIFT_BUILD_NAMESPACE}/${APP_NAME}:latest ${STAGING}/${APP_NAME}:${VERSION}
                 '''
             }
         }
@@ -196,7 +210,7 @@ pipeline {
                     # probs point to the image inside ocp cluster or perhaps an external repo?
                     yq w -i chart/values.yaml 'image_repository' ${IMAGE_REPOSITORY}
                     yq w -i chart/values.yaml 'image_name' ${APP_NAME}
-                    yq w -i chart/values.yaml 'image_namespace' ${TARGET_NAMESPACE}
+                    yq w -i chart/values.yaml 'image_namespace' ${IMAGE_NAMESPACE}
                     
                     # latest built image
                     yq w -i chart/values.yaml 'app_tag' ${VERSION}
