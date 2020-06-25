@@ -10,6 +10,7 @@ pipeline {
         ARGOCD_CONFIG_REPO = "github.com/springdo/ubiquitous-journey.git"
         ARGOCD_CONFIG_REPO_PATH = "example-deployment/values-applications.yaml"
         ARGOCD_CONFIG_REPO_BRANCH = "ds-env"
+        STAGING = "ds-staging"
         
         // Job name contains the branch eg ds-app-feature%2Fjenkins-123
         JOB_NAME = "${JOB_NAME}".replace("%2F", "-").replace("/", "-")
@@ -169,6 +170,7 @@ pipeline {
                     echo " 🏗 build found - starting it  🏗"
                     oc start-build ${APP_NAME} --from-archive=${PACKAGE} ${BUILD_ARGS} --follow
                     oc tag ${OPENSHIFT_BUILD_NAMESPACE}/${APP_NAME}:latest ${TARGET_NAMESPACE}/${APP_NAME}:${VERSION}
+                    oc tag ${OPENSHIFT_BUILD_NAMESPACE}/${APP_NAME}:latest ${STAGING}/${APP_NAME}:${VERSION}
                 '''
             }
         }
@@ -254,7 +256,7 @@ pipeline {
 
                             # TODO - @eformat we probs need to think about the app of apps approach or better logic here 
                             # as using array[0] is 🧻
-                            yq w -i ${ARGOCD_CONFIG_REPO_PATH} "applications.name==${APP_NAME}.source_ref" ${VERSION}
+                            yq w -i ${ARGOCD_CONFIG_REPO_PATH} "applications.name==test-${NAME}.source_ref" ${VERSION}
 
                             git config --global user.email "jenkins@rht-labs.bot.com"
                             git config --global user.name "Jenkins"
