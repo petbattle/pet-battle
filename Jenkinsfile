@@ -286,10 +286,11 @@ pipeline {
                             # 2. sync argocd to change pushed in previous step
                             ARGOCD_INFO="--auth-token ${ARGOCD_CREDS_PSW} --server ${ARGOCD_SERVER_SERVICE_HOST}:${ARGOCD_SERVER_SERVICE_PORT_HTTP} --insecure"
                             argocd app sync catz ${ARGOCD_INFO}
+                            argocd app wait catz ${ARGOCD_INFO}
 
                             # todo sync child app 
-                            argocd app sync test-${NAME} ${ARGOCD_INFO}
-                            argocd app wait test-${NAME} ${ARGOCD_INFO}
+                            # argocd app sync test-${NAME} ${ARGOCD_INFO}
+                            # argocd app wait test-${NAME} ${ARGOCD_INFO}
                         '''
                     }
                 }
@@ -354,10 +355,11 @@ pipeline {
                     # 2. sync argocd to change pushed in previous step
                     ARGOCD_INFO="--auth-token ${ARGOCD_CREDS_PSW} --server ${ARGOCD_SERVER_SERVICE_HOST}:${ARGOCD_SERVER_SERVICE_PORT_HTTP} --insecure"
                     argocd app sync catz ${ARGOCD_INFO}
+                    argocd app wait catz ${ARGOCD_INFO}
 
                     # todo sync child app 
-                    argocd app sync ${NAME} ${ARGOCD_INFO}
-                    argocd app wait ${NAME} ${ARGOCD_INFO}
+                    # argocd app sync ${NAME} ${ARGOCD_INFO}
+                    # argocd app wait ${NAME} ${ARGOCD_INFO}
                 '''
 
                 sh  '''
