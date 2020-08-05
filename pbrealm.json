@@ -2,7 +2,7 @@
   "id": "pbrealm",
   "realm": "pbrealm",
   "displayName": "Pet Battle Single Sign onRealm",
-  "notBefore": 1596599824,
+  "notBefore": 1596608626,
   "revokeRefreshToken": false,
   "refreshTokenMaxReuse": 0,
   "accessTokenLifespan": 300,
