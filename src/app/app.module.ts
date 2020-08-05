@@ -18,6 +18,8 @@ import { ShellModule } from './shell/shell.module';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
+import { AuthConfigModule } from './auth.config.module';
+
 @NgModule({
   imports: [
     BrowserModule,
@@ -31,6 +33,7 @@ import { AppRoutingModule } from './app-routing.module';
     ShellModule,
     HomeModule,
     Angulartics2Module.forRoot(),
+    AuthConfigModule,
     AppRoutingModule // must be imported as the last module as it contains the fallback route
   ],
   declarations: [AppComponent],
