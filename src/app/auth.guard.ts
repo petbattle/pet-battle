@@ -10,7 +10,10 @@ export class AuthGuard implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      if (this.oauthService.hasValidAccessToken()) {
+      if (!this.oauthService.hasValidAccessToken()) {
+        this.router.navigate(['']);
+        return reject(false);
+      } else {
         var base64Url = this.oauthService.getAccessToken().split('.')[1];
         var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
         var jsonPayload = decodeURIComponent(
@@ -37,11 +40,7 @@ export class AuthGuard implements CanActivate {
           //console.log('roles: ', roles);
           resolve(requiredRoles.every(role => roles.indexOf(role) > -1));
         }
-        return resolve(true);
       }
-
-      this.router.navigate(['']);
-      return reject(false);
     });
   }
 }
