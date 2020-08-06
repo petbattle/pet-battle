@@ -2,7 +2,7 @@
   "id": "pbrealm",
   "realm": "pbrealm",
   "displayName": "Pet Battle Single Sign onRealm",
-  "notBefore": 1596608626,
+  "notBefore": 1596615668,
   "revokeRefreshToken": false,
   "refreshTokenMaxReuse": 0,
   "accessTokenLifespan": 300,
@@ -44,6 +44,14 @@
   "roles": {
     "realm": [
       {
+        "id": "53d5180b-d325-4f66-b178-bbc0c7d95028",
+        "name": "pbplayer",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "pbrealm",
+        "attributes": {}
+      },
+      {
         "id": "e7571877-81f8-4362-92fd-1e1d55e60c7a",
         "name": "uma_authorization",
         "description": "${role_uma_authorization}",
@@ -56,6 +64,14 @@
         "id": "2bd90cf7-6267-4198-8f1c-5f28b7f17dbd",
         "name": "offline_access",
         "description": "${role_offline-access}",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "pbrealm",
+        "attributes": {}
+      },
+      {
+        "id": "b456b674-108f-48db-8804-830be7c49b0e",
+        "name": "pbadmin",
         "composite": false,
         "clientRole": false,
         "containerId": "pbrealm",
@@ -270,24 +286,7 @@
           "attributes": {}
         }
       ],
-      "pbclient": [
-        {
-          "id": "1e8e58cd-f36b-48b1-9230-1d59439109e5",
-          "name": "pbplayer",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "e234908e-8f1b-465e-96f1-418962830a81",
-          "attributes": {}
-        },
-        {
-          "id": "cb37158f-8520-49b7-93d2-a6c60d966d87",
-          "name": "pbadmin",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "e234908e-8f1b-465e-96f1-418962830a81",
-          "attributes": {}
-        }
-      ],
+      "pbclient": [],
       "security-admin-console": [],
       "admin-cli": [],
       "account-console": [],
@@ -302,6 +301,7 @@
           "attributes": {}
         }
       ],
+      "pbserver": [],
       "account": [
         {
           "id": "1b92da16-7826-4b57-ad24-eea22a99cec8",
@@ -555,7 +555,7 @@
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "secret": "**********",
-      "redirectUris": ["http://localhost:8080/*", "http://localhost:4200/*"],
+      "redirectUris": ["http://localhost:8081/*", "http://localhost:8080/*", "http://localhost:4200/*"],
       "webOrigins": ["+"],
       "notBefore": 0,
       "bearerOnly": false,
@@ -565,6 +565,48 @@
       "directAccessGrantsEnabled": true,
       "serviceAccountsEnabled": false,
       "publicClient": true,
+      "frontchannelLogout": false,
+      "protocol": "openid-connect",
+      "attributes": {
+        "saml.assertion.signature": "false",
+        "saml.force.post.binding": "false",
+        "saml.multivalued.roles": "false",
+        "saml.encrypt": "false",
+        "saml.server.signature": "false",
+        "saml.server.signature.keyinfo.ext": "false",
+        "exclude.session.state.from.auth.response": "false",
+        "saml_force_name_id_format": "false",
+        "saml.client.signature": "false",
+        "tls.client.certificate.bound.access.tokens": "false",
+        "saml.authnstatement": "false",
+        "display.on.consent.screen": "false",
+        "pkce.code.challenge.method": "S256",
+        "saml.onetimeuse.condition": "false"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "defaultClientScopes": ["web-origins", "role_list", "profile", "roles", "email"],
+      "optionalClientScopes": ["address", "phone", "offline_access", "microprofile-jwt"]
+    },
+    {
+      "id": "973acaa8-20dd-4508-ae86-1271aeb24339",
+      "clientId": "pbserver",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "alwaysDisplayInConsole": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "**********",
+      "redirectUris": [],
+      "webOrigins": [],
+      "notBefore": 0,
+      "bearerOnly": true,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "publicClient": false,
       "frontchannelLogout": false,
       "protocol": "openid-connect",
       "attributes": {
