@@ -5,6 +5,9 @@ import { OAuthModule, AuthConfig } from 'angular-oauth2-oidc';
 import { AuthConfigService } from './authconfig.service';
 import { authConfig, OAuthModuleConfig } from './auth.config';
 
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './auth.interceptor';
+
 export function init_app(authConfigService: AuthConfigService) {
   return () => authConfigService.initAuth();
 }
@@ -19,6 +22,11 @@ export function init_app(authConfigService: AuthConfigService) {
       provide: APP_INITIALIZER,
       useFactory: init_app,
       deps: [AuthConfigService],
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
       multi: true
     }
   ]

@@ -34,8 +34,9 @@ export class AuthGuard implements CanActivate {
           if (!token || token.resource_access === 0) {
             resolve(false);
           }
-          const realm = token.azp;
-          const roles = token.resource_access[realm].roles;
+          //const realm = token.azp;
+          //const roles = token.resource_access[realm].roles;
+          const roles = token.realm_access.roles;
           //console.log('realm: ', realm);
           //console.log('roles: ', roles);
           resolve(requiredRoles.every(role => roles.indexOf(role) > -1));
