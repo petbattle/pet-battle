@@ -12,7 +12,7 @@ const proxyConfig = [
     pathRewrite: {
       '^/cats': '/cats'
     },
-    target: 'http://cats-pet-battle-api.apps.s43.core.rht-labs.com/',
+    target: 'http://localhost:8081/',
     changeOrigin: true,
     secure: false
   }
