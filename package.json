@@ -18,7 +18,8 @@
     "prettier:check": "prettier --list-different \"./{src,e2e}/**/*.{ts,js,html,scss}\"",
     "generate": "ng generate",
     "version": "echo $npm_package_version",
-    "package": "tar -zcvf pet-battle-$(npm run version --silent).tar.gz dist Dockerfile nginx.conf"
+    "package": "tar -zcvf pet-battle-$(npm run version --silent).tar.gz dist Dockerfile nginx.conf",
+    "sonar": "node sonar-project.js"
   },
   "dependencies": {
     "@angular/animations": "^8.1.0",
@@ -35,15 +36,17 @@
     "@ngx-translate/core": "^11.0.1",
     "angulartics2": "^7.2.4",
     "bootstrap": "^4.1.1",
+    "build": "^0.1.4",
+    "run": "^1.4.0",
     "rxjs": "^6.5.2",
     "zone.js": "^0.9.1"
   },
   "devDependencies": {
     "@angular-builders/jest": "^8.0.4",
+    "@angular-devkit/build-angular": "^0.801.0",
     "@angular/cli": "~8.1.0",
     "@angular/compiler-cli": "^8.1.0",
     "@angular/language-service": "^8.1.0",
-    "@angular-devkit/build-angular": "^0.801.0",
     "@angularclass/hmr": "^2.1.3",
     "@biesbjerg/ngx-translate-extract": "^2.3.4",
     "@ngx-rocket/scripts": "^4.0.0",
@@ -55,23 +58,25 @@
     "hads": "^1.7.0",
     "htmlhint": "^0.11.0",
     "https-proxy-agent": "^2.0.0",
+    "husky": "^3.0.0",
     "jasmine-core": "~3.4.0",
     "jasmine-spec-reporter": "~4.2.1",
     "jest": "^24.7.1",
     "jest-preset-angular": "^7.1.0",
+    "jest-sonar-reporter": "^2.0.0",
     "prettier": "^1.16.3",
-    "tslint-config-prettier": "^1.14.0",
-    "stylelint-config-prettier": "^5.1.0",
     "pretty-quick": "^1.10.0",
-    "husky": "^3.0.0",
     "protractor": "~5.4.0",
     "puppeteer": "^1.17.0",
+    "sonarqube-scanner": "^2.7.0",
     "stylelint": "~10.1.0",
+    "stylelint-config-prettier": "^5.1.0",
     "stylelint-config-recommended-scss": "~3.3.0",
     "stylelint-config-standard": "~18.3.0",
     "stylelint-scss": "~3.9.0",
     "ts-node": "^8.3.0",
     "tslint": "~5.18.0",
+    "tslint-config-prettier": "^1.14.0",
     "typescript": "~3.4.0"
   },
   "prettier": {
@@ -89,5 +94,17 @@
     "hooks": {
       "pre-commit": "pretty-quick --staged"
     }
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "testResultsProcessor": "jest-sonar-reporter"
+  },
+  "jestSonar": {
+    "reportPath": "coverage",
+    "reportFile": "test-reporter.xml",
+    "indent": 4
   }
 }
