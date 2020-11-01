@@ -2,7 +2,7 @@ const scanner = require('sonarqube-scanner');
 
 scanner(
   {
-    serverUrl: 'http://sonarqube-labs-ci-cd.apps.hivec.sandbox879.opentlc.com',
+    serverUrl: 'http://sonarqube-sonarqube:9000',
     //token: "019d1e2e04eefdcd0caee1468f39a45e69d33d3f",
     options: {
       'sonar.login': 'admin',
