@@ -13,6 +13,7 @@ export class CatsService {
 
   constructor(private httpClient: HttpClient, private env: EnvService) {
     this.catUrl = this.env.customEnv.catUrl;
+    this.cats = [];
   }
 
   setNewCat(cat: any) {
