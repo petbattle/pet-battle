@@ -8,13 +8,24 @@ import { SharedModule } from '@app/shared';
 import { HomeComponent } from './home.component';
 import { QuoteService } from './quote.service';
 
+import { CatsModule } from '@app/cats/cats.module';
+import { CatcardModule } from '@app/cats/cat-card/catcard.module';
+
 describe('HomeComponent', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, Angulartics2Module.forRoot(), CoreModule, SharedModule, HttpClientTestingModule],
+      imports: [
+        RouterTestingModule,
+        Angulartics2Module.forRoot(),
+        CoreModule,
+        SharedModule,
+        HttpClientTestingModule,
+        CatsModule,
+        CatcardModule
+      ],
       declarations: [HomeComponent],
       providers: [QuoteService]
     }).compileComponents();

@@ -10,9 +10,20 @@ import { HomeComponent } from './home.component';
 import { QuoteService } from './quote.service';
 
 import { CatsModule } from '@app/cats/cats.module';
+import { CatcardModule } from '@app/cats/cat-card/catcard.module';
 
 @NgModule({
-  imports: [CommonModule, TranslateModule, CoreModule, SharedModule, Angulartics2Module, HomeRoutingModule, CatsModule],
-  declarations: [HomeComponent]
+  imports: [
+    CommonModule,
+    TranslateModule,
+    CoreModule,
+    SharedModule,
+    Angulartics2Module,
+    HomeRoutingModule,
+    CatsModule,
+    CatcardModule
+  ],
+  declarations: [HomeComponent],
+  providers: [QuoteService]
 })
 export class HomeModule {}
