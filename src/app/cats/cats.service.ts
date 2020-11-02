@@ -13,7 +13,6 @@ export class CatsService {
 
   constructor(private httpClient: HttpClient, private env: EnvService) {
     this.catUrl = this.env.customEnv.catUrl;
-    this.cats = [];
   }
 
   setNewCat(cat: any) {
@@ -22,6 +21,10 @@ export class CatsService {
   }
 
   getNewCat(): Observable<any> {
+    if (!this.cats) {
+      // else return undefined ...  :shrug:
+      return of({});
+    }
     if (this.cats.length > 0) {
       const cat = this.cats.pop();
       return this.httpClient
