@@ -1,0 +1,54 @@
+{{- if .Values.istio.enabled }}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: {{ include "pet-battle.fullname" . }}
+  labels:
+    {{- include "pet-battle.labels" . | nindent 4 }}
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - {{ include "pet-battle.fullname" . }}.{{ .Values.istio.domain }}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "pet-battle.fullname" . }}
+spec:
+  hosts:
+    - {{ include "pet-battle.fullname" . }}.{{ .Values.istio.domain }}
+  gateways:
+    - {{ include "pet-battle.fullname" . }}
+  http:
+    - route:
+        - destination:
+            host: {{ include "pet-battle.fullname" . }}
+            port:
+              number: 8080
+          subset: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: {{ include "pet-battle.fullname" . }}
+spec:
+  host: {{ include "pet-battle.fullname" . }}
+  trafficPolicy:
+    {{- if .Values.istio.mtls }}
+    tls:
+      mode: ISTIO_MUTUAL
+    {{- end }}
+    loadBalancer:
+      simple: LEAST_CONN
+  subsets:
+    - name: v1
+      labels:
+        {{- include "pet-battle.selectorLabels" . | nindent 8 }}
+{{- end }}

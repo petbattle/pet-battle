@@ -24,6 +24,10 @@ spec:
     metadata:
       labels:
         {{- include "pet-battle.selectorLabels" . | nindent 8 }}
+      annotations:
+        {{- if .Values.istio.enabled }}
+        sidecar.istio.io/inject: "true"
+        {{- end}}
     spec:
       containers:
       - image: "{{ .Values.image_repository }}/{{ .Values.image_namespace }}/{{ .Values.image_name }}:{{ .Values.app_tag }}"

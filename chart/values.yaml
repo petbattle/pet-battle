@@ -11,7 +11,7 @@ build:
 # Docker deets
 image_repository: quay.io
 image_name: pet-battle
-image_namespace: springdo
+image_namespace: petbattle
 # likely over written by the Argo definition
 app_tag: latest
 
@@ -19,3 +19,9 @@ app_tag: latest
 route: true
 # custom end point injected by config map. This is likely to changed
 config_map: "'http://pet-battle-api-cats.apps.s44.core.rht-labs.com'"
+
+# service mesh
+istio:
+  enabled: false
+  mtls: true
+  domain: apps.hivec.sandbox209.opentlc.com
