@@ -9,7 +9,7 @@ export class EnvService {
 
   // API url
   public customEnv = {
-    catUrl: 'http://localhost:8081',
+    catUrl: 'http://localhost:8082',
     apiUrl: 'http://localhost:8081'
   };
 

@@ -11,10 +11,10 @@ import { Observable, of } from 'rxjs';
   styleUrls: ['./tournament.component.scss']
 })
 export class TournamentComponent implements OnInit {
-  private catUrl: string;
+  private apiUrl: string;
 
   constructor(private httpClient: HttpClient, private env: EnvService) {
-    this.catUrl = this.env.customEnv.catUrl;
+    this.apiUrl = this.env.customEnv.apiUrl;
   }
 
   ngOnInit() {}
@@ -23,7 +23,7 @@ export class TournamentComponent implements OnInit {
     console.log('>>> tournament: ');
     this.httpClient
       .cache()
-      .get(`${this.catUrl}/tournament/061bac83-dc57-473a-a2f7-f816ae330313/leaderboard`)
+      .get(`${this.apiUrl}/api/tournament/348f6ae0-109f-4a3c-886d-2c2618e74246/leaderboard`)
       .subscribe(payload => console.log(payload));
   }
 }
