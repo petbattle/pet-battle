@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { CatsComponent } from './cats.component';
-import { CatcardComponent } from './cat-card/catcard.component';
 import { CatsService } from './cats.service';
+import { CatcardModule } from './cat-card/catcard.module';
 
 @NgModule({
-  imports: [CommonModule, TranslateModule],
-  declarations: [CatsComponent, CatcardComponent],
+  imports: [CommonModule, TranslateModule, CatcardModule],
+  declarations: [CatsComponent],
   exports: [CatsComponent],
   providers: [CatsService]
 })
