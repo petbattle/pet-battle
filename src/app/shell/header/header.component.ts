@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 
 import { I18nService } from '@app/core';
 
+import { OAuthService } from 'angular-oauth2-oidc';
+
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -10,7 +12,7 @@ import { I18nService } from '@app/core';
 export class HeaderComponent implements OnInit {
   menuHidden = true;
 
-  constructor(private i18nService: I18nService) {}
+  constructor(private i18nService: I18nService, private readonly oauthService: OAuthService) {}
 
   ngOnInit() {}
 
@@ -28,5 +30,9 @@ export class HeaderComponent implements OnInit {
 
   get languages(): string[] {
     return this.i18nService.supportedLanguages;
+  }
+
+  logout() {
+    this.oauthService.logOut();
   }
 }

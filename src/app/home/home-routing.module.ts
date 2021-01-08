@@ -5,10 +5,17 @@ import { extract } from '@app/core';
 import { HomeComponent } from './home.component';
 import { Shell } from '@app/shell/shell.service';
 
+import { AuthGuard } from '@app/auth.guard';
+
 const routes: Routes = [
   Shell.childRoutes([
-    { path: '', redirectTo: '/home', pathMatch: 'full' },
-    { path: 'home', component: HomeComponent, data: { title: extract('Home') } }
+    { path: '', redirectTo: '/home', pathMatch: 'full', canActivate: [AuthGuard], data: { roles: ['pbplayer'] } },
+    {
+      path: 'home',
+      component: HomeComponent,
+      data: { title: extract('Home'), roles: ['pbplayer'] },
+      canActivate: [AuthGuard]
+    }
   ])
 ];
 
