@@ -9,8 +9,8 @@ export class EnvService {
 
   // API url
   public customEnv = {
-    catUrl: 'http://localhost:8082',
-    apiUrl: 'http://localhost:8081'
+    catUrl: 'http://pet-battle-api-labs-staging.apps.hivec.sandbox1438.opentlc.com',
+    apiUrl: 'http://pet-battle-tournament-labs-staging.apps.hivec.sandbox1438.opentlc.com'
   };
 
   // Whether or not to enable debug mode

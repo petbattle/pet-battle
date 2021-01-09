@@ -18,7 +18,7 @@ import { ShellModule } from './shell/shell.module';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
-import { AuthConfigModule } from './auth.config.module';
+import { AuthConfigModule } from '@app/auth/auth.config.module';
 
 @NgModule({
   imports: [

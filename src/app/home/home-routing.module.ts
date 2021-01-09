@@ -5,7 +5,7 @@ import { extract } from '@app/core';
 import { HomeComponent } from './home.component';
 import { Shell } from '@app/shell/shell.service';
 
-import { AuthGuard } from '@app/auth.guard';
+import { AuthGuard } from '@app/auth/auth.guard';
 
 const routes: Routes = [
   Shell.childRoutes([
