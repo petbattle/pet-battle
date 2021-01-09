@@ -7,7 +7,6 @@ import { CoreModule } from '@app/core';
 import { SharedModule } from '@app/shared';
 import { HomeRoutingModule } from './home-routing.module';
 import { HomeComponent } from './home.component';
-import { QuoteService } from './quote.service';
 
 import { CatsModule } from '@app/cats/cats.module';
 import { CatcardModule } from '@app/cats/cat-card/catcard.module';
@@ -23,7 +22,6 @@ import { CatcardModule } from '@app/cats/cat-card/catcard.module';
     CatsModule,
     CatcardModule
   ],
-  declarations: [HomeComponent],
-  providers: [QuoteService]
+  declarations: [HomeComponent]
 })
 export class HomeModule {}

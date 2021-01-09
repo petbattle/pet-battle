@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { extract } from '@app/core';
 import { HomeComponent } from './home.component';
 import { Shell } from '@app/shell/shell.service';
 
@@ -13,7 +12,7 @@ const routes: Routes = [
     {
       path: 'home',
       component: HomeComponent,
-      data: { title: extract('Home'), roles: ['pbplayer'] },
+      data: { title: 'home', roles: ['pbplayer'] },
       canActivate: [AuthGuard]
     }
   ])
