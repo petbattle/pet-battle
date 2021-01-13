@@ -2,14 +2,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { ServiceWorkerModule } from '@angular/service-worker';
-import { TranslateModule } from '@ngx-translate/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Angulartics2Module } from 'angulartics2';
-
-import { environment } from '@env/environment';
-
-import { EnvServiceProvider } from './env/env.service.provider';
 
 import { CoreModule } from '@app/core';
 import { SharedModule } from '@app/shared';
@@ -32,15 +26,12 @@ export function loadConfiguration(configService: ConfigurationLoader) {
       useFactory: loadConfiguration,
       deps: [ConfigurationLoader],
       multi: true
-    },
-    EnvServiceProvider
+    }
   ],
   imports: [
     BrowserModule,
-    ServiceWorkerModule.register('./ngsw-worker.js', { enabled: environment.production }),
     FormsModule,
     HttpClientModule,
-    TranslateModule.forRoot(),
     NgbModule,
     CoreModule,
     SharedModule,

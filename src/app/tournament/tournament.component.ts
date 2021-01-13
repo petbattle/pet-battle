@@ -12,7 +12,7 @@ export class TournamentComponent implements OnInit {
   private tournamentUrl: string;
 
   constructor(private httpClient: HttpClient, private configSvc: ConfigurationLoader) {
-    this.tournamentUrl = this.configSvc.getConfiguration().tournaments;
+    this.tournamentUrl = this.configSvc.getConfiguration().tournamentsUrl;
   }
 
   ngOnInit() {}

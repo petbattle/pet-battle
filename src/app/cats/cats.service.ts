@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { EnvService } from '@app/env/env.service';
+import { ConfigurationLoader } from '@app/config/configuration-loader.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +11,8 @@ export class CatsService {
   private cats: any;
   private catUrl: string;
 
-  constructor(private httpClient: HttpClient, private env: EnvService) {
-    this.catUrl = this.env.customEnv.catUrl;
+  constructor(private httpClient: HttpClient, private configSvc: ConfigurationLoader) {
+    this.catUrl = this.configSvc.getConfiguration().catsUrl;
   }
 
   setNewCat(cat: any) {
