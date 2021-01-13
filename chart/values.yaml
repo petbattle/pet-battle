@@ -18,4 +18,17 @@ app_tag: latest
 # OCP route
 route: true
 # custom end point injected by config map. This is likely to changed
-config_map: "'http://pet-battle-api-cats.apps.s44.core.rht-labs.com'"
+config_map: '{
+  "catUrl": "http://pet-battle-api-labs-staging.apps.hivec.sandbox1438.opentlc.com",
+  "apiUrl": "http://pet-battle-tournament-labs-staging.apps.hivec.sandbox1438.opentlc.com",
+  "keycloak": {
+    "issuer": "http://localhost:8080/auth/realms/pbrealm",
+    "redirectUri": "http://localhost:4200/",
+    "clientId": "pbclient",
+    "responseType": "code",
+    "scope": "openid profile email",
+    "requireHttps": false,
+    "showDebugInformation": true,
+    "disableAtHashCheck": true
+  }
+}'

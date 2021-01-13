@@ -3,14 +3,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name:  "{{ include "pet-battle.fullname" . }}-environment"
+  name:  "{{ include "my-app.fullname" . }}-environment"
 data:
-  env: |-
-    (function (window) {
-      window.__env = window.__env || {};
-      window.__env.customEnv = { catUrl: {{ .Values.config_map }} }
-      // Whether or not to enable debug mode
-      // Setting this to false will disable console output
-      window.__env.enableDebug = true;
-    }(this));
+  all.json: |-
+    {{ .Values.config_map }}
 {{- end }}

@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { environment } from '@env/environment';
 import { Logger } from '@app/core';
+import { ConfigurationLoader } from './config/configuration-loader.service';
+import { Configuration } from './config/config.model';
 
 const log = new Logger('App');
 
@@ -11,8 +13,11 @@ const log = new Logger('App');
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, OnDestroy {
-  constructor() {}
+  _config: Configuration;
 
+  constructor(configurationLoaderSvc: ConfigurationLoader) {
+    this._config = configurationLoaderSvc.getConfiguration();
+  }
   ngOnInit() {
     // Setup logger
     if (environment.production) {
@@ -20,6 +25,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     log.debug('init');
+    log.debug('CONFIG_LOADED', this._config);
   }
 
   ngOnDestroy() {}

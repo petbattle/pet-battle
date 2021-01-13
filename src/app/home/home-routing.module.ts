@@ -4,16 +4,22 @@ import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './home.component';
 import { Shell } from '@app/shell/shell.service';
 
-import { AuthGuard } from '@app/auth/auth.guard';
+// import { AuthGuard } from '@app/auth/auth.guard';
 
 const routes: Routes = [
   Shell.childRoutes([
-    { path: '', redirectTo: '/home', pathMatch: 'full', canActivate: [AuthGuard], data: { roles: ['pbplayer'] } },
+    {
+      path: '',
+      redirectTo: '/home',
+      pathMatch: 'full',
+      // canActivate: [AuthGuard],
+      data: { roles: ['pbplayer'] }
+    },
     {
       path: 'home',
       component: HomeComponent,
-      data: { title: 'home', roles: ['pbplayer'] },
-      canActivate: [AuthGuard]
+      data: { title: 'home', roles: ['pbplayer'] }
+      // canActivate: [AuthGuard]
     }
   ])
 ];

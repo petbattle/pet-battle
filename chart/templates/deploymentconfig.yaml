@@ -36,7 +36,7 @@ spec:
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
-          - mountPath: "/opt/app-root/src/env"
+          - mountPath: "/opt/app-root/src/config"
             name: "{{ include "pet-battle.fullname" . }}-config"
         readinessProbe:
           httpGet:
@@ -54,9 +54,6 @@ spec:
         configMap:
           name: "{{ include "pet-battle.fullname" . }}-environment"
           defaultMode: 420
-          items:
-            - key: env
-              path: env.js
   test: false
   triggers:
   - type: ConfigChange

@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -20,7 +20,21 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { AuthConfigModule } from '@app/auth/auth.config.module';
 
+import { ConfigurationLoader } from '@app/config/configuration-loader.service';
+
+export function loadConfiguration(configService: ConfigurationLoader) {
+  return () => configService.loadConfiguration();
+}
 @NgModule({
+  providers: [
+    {
+      provide: APP_INITIALIZER,
+      useFactory: loadConfiguration,
+      deps: [ConfigurationLoader],
+      multi: true
+    },
+    EnvServiceProvider
+  ],
   imports: [
     BrowserModule,
     ServiceWorkerModule.register('./ngsw-worker.js', { enabled: environment.production }),
@@ -37,7 +51,6 @@ import { AuthConfigModule } from '@app/auth/auth.config.module';
     AppRoutingModule // must be imported as the last module as it contains the fallback route
   ],
   declarations: [AppComponent],
-  providers: [EnvServiceProvider],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
