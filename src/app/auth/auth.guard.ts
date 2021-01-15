@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { Logger } from '@app/core';
 import { OAuthService } from 'angular-oauth2-oidc';
-
+const log = new Logger('AuthGuaard');
 @Injectable({
   providedIn: 'root'
 })
@@ -11,6 +12,7 @@ export class AuthGuard implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (!this.oauthService.hasValidAccessToken()) {
+        log.info('No valid auth token');
         this.router.navigate(['']);
         return reject(false);
       } else {
@@ -34,9 +36,11 @@ export class AuthGuard implements CanActivate {
           if (!token || token.resource_access === 0) {
             resolve(false);
           }
+
           // const realm = token.azp;
           // const roles = token.resource_access[realm].roles;
           const roles = token.realm_access.roles;
+          log.info('Matching roles from token to authGuard', roles, requiredRoles);
           // console.log('realm: ', realm);
           // console.log('roles: ', roles);
           resolve(requiredRoles.every(role => roles.indexOf(role) > -1));

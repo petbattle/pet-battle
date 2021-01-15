@@ -3,7 +3,7 @@
   "tournamentsUrl": "http://pet-battle-tournament-labs-staging.apps.hivec.sandbox309.opentlc.com",
   "keycloak": {
     "issuer": "http://localhost:8080/auth/realms/pbrealm",
-    "redirectUri": "http://localhost:4200/",
+    "redirectUri": "http://localhost:4200/tournament",
     "clientId": "pbclient",
     "responseType": "code",
     "scope": "openid profile email",

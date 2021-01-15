@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { Configuration } from './config.model';
-
+import { Logger } from '@app/core';
+const log = new Logger('ConfigurationLoader');
 @Injectable({
   providedIn: 'root'
 })
@@ -17,12 +18,12 @@ export class ConfigurationLoader {
       .get(this.CONFIGURATION_URL)
       .toPromise()
       .then((configuration: Configuration) => {
-        console.info('Config Loaded', configuration);
+        log.info('Config Loaded', configuration);
         this._configuration = configuration;
         return configuration;
       })
       .catch((error: any) => {
-        console.error(error);
+        log.error(error);
       });
   }
 
