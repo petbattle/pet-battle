@@ -34,7 +34,7 @@ export class TournamentComponent implements OnInit {
     console.log('>>> tournament: ');
     this.httpClient
       .cache()
-      .get(`${this.tournamentUrl}/api/tournament/348f6ae0-109f-4a3c-886d-2c2618e74246/leaderboard`)
+      .get(`${this.tournamentUrl}/api/tournament/leaderboard`)
       .subscribe(payload => console.log(payload));
   }
 }
