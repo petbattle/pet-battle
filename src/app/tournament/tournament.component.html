@@ -30,8 +30,11 @@
       <th scope="col" class="fit">{{ player.upVotes }}</th>
       <th scope="col" class="fit">{{ player.downVotes }}</th>
       <th scope="col" class="fit">
-        <button type="button" class="btn btn-light" (click)="voteForPet(player.petId)">
-          🎟 Vote!
+        <button type="button" class="btn btn-light" (click)="voteForPet(player.petId, 'UP')">
+          👍
+        </button>
+        <button type="button" class="btn btn-light" (click)="voteForPet(player.petId, 'DOWN')">
+          👎
         </button>
       </th>
     </tr>

@@ -46,9 +46,10 @@ export class TournamentComponent implements OnInit {
     });
   }
 
-  voteForPet(petId: string) {
-    this.tournamentSvc.voteForPet(this.tournamentId, petId).subscribe(resp => {
+  voteForPet(petId: string, direction: string) {
+    this.tournamentSvc.voteForPet(this.tournamentId, petId, direction).subscribe(resp => {
       log.info('VOTE', resp);
+      this.refreshLeaderBoard();
     });
   }
 

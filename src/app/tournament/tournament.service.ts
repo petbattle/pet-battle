@@ -16,17 +16,14 @@ export class TournamentsService {
   }
 
   getLeaderBoard(): Observable<LeaderBoard[]> {
-    return this.httpClient
-      .cache()
-      .get(`${this.tournamentsUrl}/api/tournament/leaderboard`)
-      .pipe(
-        map((body: any) => {
-          // this.cats = this.cats ? this.cats : this.shuffle(body);
-          return body;
-        }),
-        // map(e => this.domSanitizer.bypassSecurityTrustUrl(URL.createObjectURL(e))),
-        catchError(err => of({ id: '404', err }))
-      );
+    return this.httpClient.get(`${this.tournamentsUrl}/api/tournament/leaderboard`).pipe(
+      map((body: any) => {
+        // this.cats = this.cats ? this.cats : this.shuffle(body);
+        return body;
+      }),
+      // map(e => this.domSanitizer.bypassSecurityTrustUrl(URL.createObjectURL(e))),
+      catchError(err => of({ id: '404', err }))
+    );
   }
 
   getTournament(): Observable<any> {
@@ -81,11 +78,11 @@ export class TournamentsService {
     );
   }
 
-  voteForPet(tournamentId: string, petId: string): Observable<any> {
+  voteForPet(tournamentId: string, petId: string, direcction: string): Observable<any> {
     return (
       this.httpClient
         // .cache()
-        .post(`${this.tournamentsUrl}/api/tournament/${tournamentId}/vote/${petId}?dir=`, {})
+        .post(`${this.tournamentsUrl}/api/tournament/${tournamentId}/vote/${petId}?dir=${direcction}`, {})
         .pipe(
           map((body: any) => {
             return body;
