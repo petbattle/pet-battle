@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 
-import { HttpClient } from '@angular/common/http';
-import { ConfigurationLoader } from '@app/config/configuration-loader.service';
 import { TournamentsService } from './tournament.service';
 import { Logger } from '@app/core';
-const log = new Logger('TournamentComp');
+import { OAuthService } from 'angular-oauth2-oidc';
+import { LeaderBoard } from './tournament.mode';
+const log = new Logger('TournamentComponent');
 
 @Component({
   selector: 'app-tournament',
@@ -12,29 +12,65 @@ const log = new Logger('TournamentComp');
   styleUrls: ['./tournament.component.scss']
 })
 export class TournamentComponent implements OnInit {
-  private tournamentUrl: string;
+  public identity: any;
+  public leaderBoard: LeaderBoard[];
+  private decodedToken: any;
+  private tournamentId: string;
 
-  constructor(
-    private httpClient: HttpClient,
-    private configSvc: ConfigurationLoader,
-    private tournamentSvc: TournamentsService
-  ) {
-    this.tournamentUrl = this.configSvc.getConfiguration().tournamentsUrl;
+  constructor(private tournamentSvc: TournamentsService, private oAuthSvc: OAuthService) {
+    this.leaderBoard = [];
+    this.refreshLeaderBoard();
+    this.tournamentSvc.getTournament().subscribe(resp => {
+      this.tournamentId = resp.TournamentID;
+    });
+    this.identity = this.oAuthSvc.getIdentityClaims();
+    const base64Url = this.oAuthSvc.getAccessToken().split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(c => {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join('')
+    );
+    this.decodedToken = JSON.parse(jsonPayload);
   }
 
   ngOnInit() {}
 
   createTournmament() {
     this.tournamentSvc.createNewTournament({}).subscribe(resp => {
+      log.info('CREATE', resp);
+      this.tournamentId = resp.TournamentID;
+    });
+  }
+
+  voteForPet(petId: string) {
+    this.tournamentSvc.voteForPet(this.tournamentId, petId).subscribe(resp => {
+      log.info('VOTE', resp);
+    });
+  }
+
+  stopTournmament() {
+    this.tournamentSvc.createNewTournament({}).subscribe(resp => {
       log.info(resp);
     });
   }
 
-  listTournament() {
-    console.log('>>> tournament: ');
-    this.httpClient
-      .cache()
-      .get(`${this.tournamentUrl}/api/tournament/leaderboard`)
-      .subscribe(payload => console.log(payload));
+  deleteTournmament() {
+    this.tournamentSvc.deleteTournament(this.tournamentId).subscribe(resp => {
+      log.info('DELETE', resp);
+    });
+  }
+
+  refreshLeaderBoard() {
+    this.tournamentSvc.getLeaderBoard().subscribe(resp => {
+      log.info('GET LEADER BOARD', resp);
+      this.leaderBoard = resp;
+    });
+  }
+  hasAdminRole(): boolean {
+    return this.decodedToken.realm_access.roles.indexOf('pbadmin') > -1;
   }
 }

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { ConfigurationLoader } from '@app/config/configuration-loader.service';
+import { LeaderBoard } from './tournament.mode';
 
 @Injectable({
   providedIn: 'root'
@@ -14,57 +15,35 @@ export class TournamentsService {
     this.tournamentsUrl = this.configSvc.getConfiguration().tournamentsUrl;
   }
 
-  // getNewCat(): Observable<any> {
-  //   if (!this.cats) {
-  //     // else return undefined ...  :shrug:
-  //     return of({});
-  //   }
-  //   if (this.cats.length > 0) {
-  //     const cat = this.cats.pop();
-  //     return this.httpClient
-  //       .cache()
-  //       .get(`${this.catUrl}/cats/${cat.id}`)
-  //       .pipe(
-  //         map((body: any) => {
-  //           // this.cats = this.cats ? this.cats : this.shuffle(body);
-  //           return body;
-  //         }),
-  //         // map(e => this.domSanitizer.bypassSecurityTrustUrl(URL.createObjectURL(e))),
-  //         catchError(() => of({ id: '404', image: '' }))
-  //       );
-  //   } else {
-  //     // else return undefined ...  :shrug:
-  //     return of(this.cats.pop());
-  //   }
-  // }
-
-  getAllCats(): Observable<any> {
+  getLeaderBoard(): Observable<LeaderBoard[]> {
     return this.httpClient
       .cache()
-      .get(`${this.tournamentsUrl}/cats/`)
+      .get(`${this.tournamentsUrl}/api/tournament/leaderboard`)
       .pipe(
         map((body: any) => {
           // this.cats = this.cats ? this.cats : this.shuffle(body);
           return body;
         }),
         // map(e => this.domSanitizer.bypassSecurityTrustUrl(URL.createObjectURL(e))),
-        catchError(() => of({ id: '404', image: '' }))
+        catchError(err => of({ id: '404', err }))
       );
   }
 
-  // getAllCatIds(): Observable<any> {
-  //   return this.httpClient
-  //     .cache()
-  //     .get(`${this.catUrl}/cats/ids`)
-  //     .pipe(
-  //       map((body: any) => {
-  //         this.cats = this.cats ? this.cats : this.shuffle(body);
-  //         return body;
-  //       }),
-  //       // map(e => this.domSanitizer.bypassSecurityTrustUrl(URL.createObjectURL(e))),
-  //       catchError(() => of({ id: '404', image: '' }))
-  //     );
-  // }
+  getTournament(): Observable<any> {
+    return this.httpClient
+      .cache()
+      .get(`${this.tournamentsUrl}/api/tournament`, {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      })
+      .pipe(
+        map((body: any) => {
+          return body;
+        }),
+        catchError(() => of({ id: '404', image: '' }))
+      );
+  }
 
   // getTopCat(): Observable<any> {
   //   return this.httpClient.get(`${this.catUrl}/cats/topcats`).pipe(
@@ -80,7 +59,33 @@ export class TournamentsService {
     return (
       this.httpClient
         // .cache()
-        .post(`${this.tournamentsUrl}/`, tournament)
+        .post(`${this.tournamentsUrl}/api/tournament`, tournament)
+        .pipe(
+          map((body: any) => {
+            return body;
+          })
+        )
+    );
+  }
+
+  deleteTournament(tournamentId: string): Observable<any> {
+    return (
+      this.httpClient
+        // .cache()
+        .delete(`${this.tournamentsUrl}/api/tournament/${tournamentId}`)
+        .pipe(
+          map((body: any) => {
+            return body;
+          })
+        )
+    );
+  }
+
+  voteForPet(tournamentId: string, petId: string): Observable<any> {
+    return (
+      this.httpClient
+        // .cache()
+        .post(`${this.tournamentsUrl}/api/tournament/${tournamentId}/vote/${petId}?dir=`, {})
         .pipe(
           map((body: any) => {
             return body;

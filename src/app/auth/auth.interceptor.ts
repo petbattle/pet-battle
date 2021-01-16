@@ -15,7 +15,7 @@ export class AuthInterceptor implements HttpInterceptor {
         Authorization: `Bearer ${this.oauthService.getAccessToken()}`
       }
     });
-    console.log('>>> in AuthInterceptor', this.oauthService.getAccessToken());
+    // console.log('>>> in AuthInterceptor', this.oauthService.getAccessToken());
     return next.handle(req);
   }
 }
