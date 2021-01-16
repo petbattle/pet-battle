@@ -1,6 +1,12 @@
 <div class="container">
   <h1>Tournament</h1>
 
+  <div class="text-center">
+    <button type="button" class="btn btn-light " (click)="createTournmament()">
+      🚀 Create Tournament
+      <!-- <span class="spinner-grow spinner-grow-sm" role="status" [hidden]="refreshing" aria-hidden="true"></span> -->
+    </button>
+  </div>
   <table class="table table-striped table-bordered" up-target=".container" up-hungry poll>
     <a class="text-uppercase" routerLink="/tournament" routerLinkActive="active" (click)="listTournament()">
       <i class="fas fa-gamepad "></i>

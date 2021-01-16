@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { NullValidationHandler, OAuthService } from 'angular-oauth2-oidc';
+import { NullValidationHandler, OAuthService, AuthConfig } from 'angular-oauth2-oidc';
 import { filter } from 'rxjs/operators';
 import { ConfigurationLoader } from '@app/config/configuration-loader.service';
 
