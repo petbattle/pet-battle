@@ -10,9 +10,11 @@ import { LeaderBoard } from './tournament.mode';
 })
 export class TournamentsService {
   private tournamentsUrl: string;
+  private catsUrl: string;
 
   constructor(private httpClient: HttpClient, private configSvc: ConfigurationLoader) {
     this.tournamentsUrl = this.configSvc.getConfiguration().tournamentsUrl;
+    this.catsUrl = this.configSvc.getConfiguration().catsUrl;
   }
 
   getLeaderBoard(): Observable<LeaderBoard[]> {
@@ -41,15 +43,19 @@ export class TournamentsService {
         catchError(() => of({ id: '404', image: '' }))
       );
   }
-  // getTopCat(): Observable<any> {
-  //   return this.httpClient.get(`${this.catUrl}/cats/topcats`).pipe(
-  //     map((body: any) => {
-  //       return body;
-  //     }),
-  //     // map(e => this.domSanitizer.bypassSecurityTrustUrl(URL.createObjectURL(e))),
-  //     catchError(() => of({ id: '404', url: 'https://http.cat/404' }))
-  //   );
-  // }
+
+  // dirty hack - should not repeat svc here but was too lazy to impotr the module
+  getAllCats(): Observable<any> {
+    return this.httpClient
+      .cache()
+      .get(`${this.catsUrl}/cats/`)
+      .pipe(
+        map((body: any) => {
+          return body;
+        }),
+        catchError(() => of({ id: '404', image: '' }))
+      );
+  }
 
   createNewTournament(tournament: any): Observable<any> {
     return (
@@ -74,6 +80,14 @@ export class TournamentsService {
             return body;
           })
         )
+    );
+  }
+
+  addNewPet(tournamentId: string, petId: string): Observable<any> {
+    return this.httpClient.post(`${this.tournamentsUrl}/api/tournament/${tournamentId}/add/${petId}`, {}).pipe(
+      map((body: any) => {
+        return body;
+      })
     );
   }
 
