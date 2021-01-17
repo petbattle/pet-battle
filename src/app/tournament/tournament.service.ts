@@ -41,7 +41,6 @@ export class TournamentsService {
         catchError(() => of({ id: '404', image: '' }))
       );
   }
-
   // getTopCat(): Observable<any> {
   //   return this.httpClient.get(`${this.catUrl}/cats/topcats`).pipe(
   //     map((body: any) => {
