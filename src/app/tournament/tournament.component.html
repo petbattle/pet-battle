@@ -9,45 +9,12 @@
     </div>
     <div class="col-sm">
       <button type="button" class="btn btn-info" (click)="openScrollableContent(longContent)">
-        🐈 Add your cat
+        🐈 Add your pet 🐶
       </button>
     </div>
   </div>
 
-  <div class="row">
-    <table class="table table-striped table-bordered" up-target=".container" up-hungry poll>
-      <thead>
-        <tr>
-          <th scope="col" class="fit">PetID</th>
-          <th scope="col" class="fit">Total Votes</th>
-          <th scope="col" class="fit">Up Votes</th>
-          <th scope="col" class="fit">Down Votes</th>
-          <th scope="col" class="fit"></th>
-        </tr>
-      </thead>
-      <tr *ngFor="let player of leaderBoard">
-        <th scope="col" class="fit">
-          <img class="card-img-top" [src]="player.image" alt="" />
-        </th>
-        <th scope="col" class="fit">{{ player.voteTally }}</th>
-        <th scope="col" class="fit">{{ player.upVotes }}</th>
-        <th scope="col" class="fit">{{ player.downVotes }}</th>
-        <th scope="col" class="fit">
-          <button type="button" class="btn btn-light" (click)="voteForPet(player.petId, 'up')">
-            👍
-          </button>
-          <button type="button" class="btn btn-light" (click)="voteForPet(player.petId, 'down')">
-            👎
-          </button>
-        </th>
-      </tr>
-      <tr *ngIf="leaderBoard.length == 0">
-        <td colspan="4">No data found.</td>
-      </tr>
-    </table>
-  </div>
-
-  <div class="text-center row" *ngIf="!hasAdminRole()">
+  <div class="text-center row" *ngIf="hasAdminRole()">
     <div class="col-sm">
       <button type="button" class="btn btn-success" (click)="createTournmament()">
         🚀 Create Tournament
@@ -66,6 +33,37 @@
         🙀 Delete Tournament
       </button>
     </div>
+  </div>
+
+  <div class="row">
+    <table class="table table-striped table-bordered" up-target=".container" up-hungry poll>
+      <thead>
+        <tr>
+          <th scope="col" class="fit">Pet</th>
+          <th scope="col" class="fit">Total Votes</th>
+          <th scope="col" class="fit">Up Votes</th>
+          <th scope="col" class="fit">Down Votes</th>
+        </tr>
+      </thead>
+      <tr *ngFor="let player of leaderBoard">
+        <th scope="col" class="fit">
+          <img class="card-img-top" [src]="player.image" alt="" />
+          <button type="button" class="btn btn-dark" (click)="voteForPet(player.petId, 'up')">
+            👍 Up Vote 👍
+          </button>
+
+          <button type="button" class="btn btn-dark" (click)="voteForPet(player.petId, 'down')">
+            👎 Down Vote 👎
+          </button>
+        </th>
+        <th scope="col" class="fit">{{ player.voteTally }}</th>
+        <th scope="col" class="fit">{{ player.upVotes }}</th>
+        <th scope="col" class="fit">{{ player.downVotes }}</th>
+      </tr>
+      <tr *ngIf="leaderBoard.length == 0">
+        <td colspan="4">No data found.</td>
+      </tr>
+    </table>
   </div>
 
   <!-- Modal -->
