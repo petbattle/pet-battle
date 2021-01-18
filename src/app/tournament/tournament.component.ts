@@ -5,6 +5,7 @@ import { Logger } from '@app/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { LeaderBoard } from './tournament.mode';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ConfigurationLoader } from '@app/config/configuration-loader.service';
 
 const log = new Logger('TournamentComponent');
 
@@ -16,6 +17,7 @@ const log = new Logger('TournamentComponent');
 export class TournamentComponent implements OnInit {
   public identity: any;
   public leaderBoard: LeaderBoard[];
+  public cat404: string;
   public cats: any[];
   private decodedToken: any;
   private tournamentId: string;
@@ -23,10 +25,11 @@ export class TournamentComponent implements OnInit {
   constructor(
     private tournamentSvc: TournamentsService,
     private oAuthSvc: OAuthService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private configLoader: ConfigurationLoader
   ) {
+    this.cat404 = this.configLoader.getConfiguration().cat404;
     this.leaderBoard = [];
-    this.refreshLeaderBoard();
     // preload some data
     this.tournamentSvc.getTournament().subscribe(resp => {
       this.tournamentId = resp.TournamentID;
@@ -34,6 +37,7 @@ export class TournamentComponent implements OnInit {
     this.tournamentSvc.getAllCats().subscribe(all_cats => {
       // dirty hack - should not repeat svc here but was too lazy to impotr the module
       this.cats = all_cats;
+      this.refreshLeaderBoard();
     });
 
     this.identity = this.oAuthSvc.getIdentityClaims();
@@ -81,7 +85,14 @@ export class TournamentComponent implements OnInit {
   refreshLeaderBoard() {
     this.tournamentSvc.getLeaderBoard().subscribe(resp => {
       log.info('GET LEADER BOARD', resp);
-      this.leaderBoard = resp;
+      const lb: LeaderBoard[] = [];
+      resp.map(tournament => {
+        const foundCat = this.cats.findIndex(cat => cat.id === tournament.petId);
+        tournament.image = foundCat === -1 ? this.cat404 : this.cats[foundCat].image;
+        lb.push(tournament);
+        // todo - sort out mapping the petId to the cats table id and pull the image
+      });
+      this.leaderBoard = lb;
     });
   }
   hasAdminRole(): boolean {

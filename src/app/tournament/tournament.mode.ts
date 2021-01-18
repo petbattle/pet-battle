@@ -3,4 +3,5 @@ export interface LeaderBoard {
   petId: string;
   upVotes: number;
   voteTally: number;
+  image: string;
 }

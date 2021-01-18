@@ -4,4 +4,5 @@ export interface Configuration {
   tournamentsUrl: string;
   catsUrl: string;
   keycloak: AuthConfig;
+  cat404: string;
 }

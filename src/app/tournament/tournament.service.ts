@@ -74,7 +74,7 @@ export class TournamentsService {
     return (
       this.httpClient
         // .cache()
-        .delete(`${this.tournamentsUrl}/api/tournament/${tournamentId}`)
+        .delete(`${this.tournamentsUrl}/api/tournament/${tournamentId}/cancel`)
         .pipe(
           map((body: any) => {
             return body;
