@@ -11,7 +11,7 @@ build:
 # Docker deets
 image_repository: quay.io
 image_name: pet-battle
-image_namespace: springdo
+image_namespace: petbattle
 # likely over written by the Argo definition
 app_tag: latest
 
@@ -19,11 +19,11 @@ app_tag: latest
 route: true
 # custom end point injected by config map. This is likely to changed
 config_map: '{
-  "catUrl": "http://pet-battle-api-labs-staging.apps.hivec.sandbox1438.opentlc.com",
-  "apiUrl": "http://pet-battle-tournament-labs-staging.apps.hivec.sandbox1438.opentlc.com",
+  "catsUrl": "http://pet-battle-api-labs-dev.apps.hivec.sandbox1254.opentlc.com",
+  "tournamentsUrl": "http://pet-battle-tournament-labs-dev.apps.hivec.sandbox1254.opentlc.com",
   "keycloak": {
-    "issuer": "http://localhost:8080/auth/realms/pbrealm",
-    "redirectUri": "http://localhost:4200/",
+    "issuer": "https://keycloak-labs-dev.apps.hivec.sandbox1254.opentlc.com/auth/realms/pbrealm",
+    "redirectUri": "http://pb-pet-battle-mickey-mouse.apps.hivec.sandbox1254.opentlc.com/tournament",
     "clientId": "pbclient",
     "responseType": "code",
     "scope": "openid profile email",

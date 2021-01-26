@@ -6,6 +6,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { LeaderBoard } from './tournament.mode';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConfigurationLoader } from '@app/config/configuration-loader.service';
+import { Cat404 } from './cat404.component';
 
 const log = new Logger('TournamentComponent');
 
@@ -26,9 +27,9 @@ export class TournamentComponent implements OnInit {
     private tournamentSvc: TournamentsService,
     private oAuthSvc: OAuthService,
     private modalService: NgbModal,
-    private configLoader: ConfigurationLoader
+    private notFound: Cat404
   ) {
-    this.cat404 = this.configLoader.getConfiguration().cat404;
+    this.cat404 = this.notFound.cat404;
     this.leaderBoard = [];
     // preload some data
     this.tournamentSvc.getTournament().subscribe(resp => {
