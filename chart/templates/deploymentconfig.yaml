@@ -20,8 +20,9 @@ spec:
       updatePeriodSeconds: 1
     type: Rolling
   template:
-  template:
     metadata:
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
       labels:
         {{- include "pet-battle.selectorLabels" . | nindent 8 }}
     spec:
@@ -36,7 +37,7 @@ spec:
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
-          - mountPath: "/opt/app-root/src/config"
+          - mountPath: "/opt/app-root/src/assets/configuration/"
             name: "{{ include "pet-battle.fullname" . }}-config"
         readinessProbe:
           httpGet:

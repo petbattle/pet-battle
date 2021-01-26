@@ -8,8 +8,6 @@ import { environment } from '@env/environment';
   styleUrls: ['./winner.component.scss']
 })
 export class WinnerComponent implements OnInit {
-  version: string | null = environment.version;
-
   constructor() {}
 
   ngOnInit() {}
