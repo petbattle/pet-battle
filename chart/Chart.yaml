@@ -3,10 +3,11 @@ name: pet-battle
 description: A Helm chart to deploy the frontend of the Pet Battle
 type: application
 # HelmChart Version
-version: 1.0.1
+version: 1.0.3
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application.
 appVersion: 1.0.1
 home: https://springdo.github.io/pet-battle
 maintainers:
   - name: springdo
+  - name: eformat
