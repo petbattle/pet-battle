@@ -32,7 +32,7 @@ helm template -f helm/values.yaml helm --set app_tag=purple | oc apply -n my-nam
 ## Config Map for the API
 
 ```
-helm template -f helm/values.yaml helm --set config_map="'http://cats-pet-battle-api.apps.ssmycluster.com'" | oc apply -f-
+helm template -f helm/values.yaml helm | oc apply -f-
 oc scale dc/pet-battle --replicas=0
 oc scale dc/pet-battle --replicas=10
 ```
