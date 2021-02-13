@@ -6,6 +6,11 @@ metadata:
   name: {{ include "pet-battle.fullname" . }}
   labels:
     {{- include "pet-battle.labels" . | nindent 4 }}
+  annotations:
+    haproxy.router.openshift.io/balance: "roundrobin"
+    {{- if .Values.a_b_deploy.svc_name }}
+    haproxy.router.openshift.io/disable_cookies: "true"
+    {{- end }}
 spec:
   port:
     targetPort: 8080-tcp
@@ -22,7 +27,7 @@ spec:
   {{- end }}
 status:
   ingress:
-    - conditions:
-        - status: 'True'
-          type: Admitted
+  - conditions:
+    - status: 'True'
+      type: Admitted
 {{ end }}
