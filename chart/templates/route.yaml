@@ -13,7 +13,9 @@ spec:
     kind: Service
     name: {{ include "pet-battle.fullname" . }}
     weight: 100
-  wildcardPolicy: None
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
 status:
   ingress:
     - conditions:
