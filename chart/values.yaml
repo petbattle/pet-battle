@@ -14,16 +14,19 @@ image_name: pet-battle
 image_namespace: petbattle
 # likely over written by the Argo definition
 app_tag: latest
+a_b_deploy:
+  weight: 100
+  # svc_name:
 
 # OCP route
 route: true
 # custom end point injected by config map. This is likely to changed
 config_map: '{
-  "catsUrl": "http://pet-battle-api-labs-dev.apps.hivec.sandbox1254.opentlc.com",
-  "tournamentsUrl": "http://pet-battle-tournament-labs-dev.apps.hivec.sandbox1254.opentlc.com",
+  "catsUrl": "http://pet-battle-api-labs-test.apps.hivec.sandbox1459.opentlc.com",
+  "tournamentsUrl": "http://pet-battle-tournament-labs-test.apps.hivec.sandbox1459.opentlc.com",
   "keycloak": {
-    "issuer": "https://keycloak-labs-dev.apps.hivec.sandbox1254.opentlc.com/auth/realms/pbrealm",
-    "redirectUri": "http://pb-pet-battle-mickey-mouse.apps.hivec.sandbox1254.opentlc.com/tournament",
+    "issuer": "https://keycloak-labs-test.apps.hivec.sandbox1459.opentlc.com/auth/realms/pbrealm",
+    "redirectUri": "http://prod-pet-battle-mickey-mouse.apps.hivec.sandbox1459.opentlc.com/tournament",
     "clientId": "pbclient",
     "responseType": "code",
     "scope": "openid profile email",
