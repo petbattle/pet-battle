@@ -48,6 +48,7 @@ Selector labels
 */}}
 {{- define "pet-battle.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "pet-battle.name" . }}
+app.kubernetes.io/component: {{ include "pet-battle.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 deploymentconfig: {{ include "pet-battle.fullname" . }}
 {{- end -}}
