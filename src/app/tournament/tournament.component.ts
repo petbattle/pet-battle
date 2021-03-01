@@ -41,8 +41,8 @@ export class TournamentComponent implements OnInit {
       this.refreshLeaderBoard();
     });
 
-    this.identity = this.oAuthSvc.getIdentityClaims();
-    const base64Url = this.oAuthSvc.getAccessToken().split('.')[1];
+    this.identity = this.oAuthSvc ? this.oAuthSvc.getIdentityClaims() : {};
+    const base64Url = this.oAuthSvc.getAccessToken() ? this.oAuthSvc.getAccessToken().split('.')[1] : '';
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     const jsonPayload = decodeURIComponent(
       atob(base64)
@@ -52,7 +52,7 @@ export class TournamentComponent implements OnInit {
         })
         .join('')
     );
-    this.decodedToken = JSON.parse(jsonPayload);
+    this.decodedToken = jsonPayload ? JSON.parse(jsonPayload) : {};
   }
 
   ngOnInit() {}
@@ -97,7 +97,7 @@ export class TournamentComponent implements OnInit {
     });
   }
   hasAdminRole(): boolean {
-    return this.decodedToken.realm_access.roles.indexOf('pbadmin') > -1;
+    return this.decodedToken.realm_access ? this.decodedToken.realm_access.roles.indexOf('pbadmin') > -1 : false;
   }
   // Cat selecting modal ztuff
   openScrollableContent(longContent: any) {

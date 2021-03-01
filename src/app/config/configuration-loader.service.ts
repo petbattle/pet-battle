@@ -9,7 +9,12 @@ const log = new Logger('ConfigurationLoader');
 })
 export class ConfigurationLoader {
   private readonly CONFIGURATION_URL = './assets/configuration/config.json';
-  private _configuration: Configuration;
+  private _configuration: Configuration = {
+    tournamentsUrl: '',
+    catsUrl: '',
+    keycloak: {},
+    cat404: ''
+  };
 
   constructor(private _http: HttpClient) {}
 

@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { RouterTestingModule } from '@angular/router/testing';
-
+import { AuthConfigModule } from '@app/auth/auth.config.module';
 import { HeaderComponent } from './header.component';
 
 describe('HeaderComponent', () => {
@@ -11,7 +11,7 @@ describe('HeaderComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, NgbModule, TranslateModule.forRoot()],
+      imports: [RouterTestingModule, NgbModule, TranslateModule.forRoot(), AuthConfigModule],
       declarations: [HeaderComponent]
     }).compileComponents();
   }));

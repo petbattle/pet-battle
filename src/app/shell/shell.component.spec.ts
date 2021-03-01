@@ -4,6 +4,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { CoreModule } from '@app/core';
+import { AuthConfigModule } from '@app/auth/auth.config.module';
 
 import { ShellComponent } from './shell.component';
 import { HeaderComponent } from './header/header.component';
@@ -14,7 +15,7 @@ describe('ShellComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, TranslateModule.forRoot(), NgbModule, CoreModule],
+      imports: [RouterTestingModule, TranslateModule.forRoot(), NgbModule, CoreModule, AuthConfigModule],
       declarations: [HeaderComponent, ShellComponent]
     }).compileComponents();
   }));
