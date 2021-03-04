@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { Router } from '@angular/router';
 import { KeycloakService } from 'keycloak-angular';
 
 @Component({
@@ -9,8 +9,15 @@ import { KeycloakService } from 'keycloak-angular';
 })
 export class HeaderComponent implements OnInit {
   menuHidden = true;
+  buttonText: string;
+  isLoggedIn: boolean;
 
-  constructor(private readonly keycloakSvc: KeycloakService) {}
+  constructor(private readonly keycloakSvc: KeycloakService, private router: Router) {
+    this.keycloakSvc.isLoggedIn().then(isLoggedIn => {
+      this.isLoggedIn = isLoggedIn;
+      this.buttonText = isLoggedIn ? 'Logout' : 'Login';
+    });
+  }
 
   ngOnInit() {}
 
@@ -18,7 +25,13 @@ export class HeaderComponent implements OnInit {
     this.menuHidden = !this.menuHidden;
   }
 
-  logout() {
-    this.keycloakSvc.logout();
+  async logout() {
+    if (this.isLoggedIn) {
+      await this.keycloakSvc.logout(`${window.location.origin}/home`);
+    } else {
+      await this.keycloakSvc.login({
+        redirectUri: `${window.location.origin}${this.router.url}`
+      });
+    }
   }
 }

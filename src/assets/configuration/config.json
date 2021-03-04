@@ -1,8 +1,8 @@
 {
-  "catsUrl": "http://pet-battle-api-labs-dev.apps.hivec.sandbox1459.opentlc.com",
-  "tournamentsUrl": "http://pet-battle-tournament-labs-dev.apps.hivec.sandbox1459.opentlc.com",
+  "catsUrl": "https://pet-battle-api-labs-test.apps.hivec.sandbox1293.opentlc.com",
+  "tournamentsUrl": "https://pet-battle-tournament-labs-test.apps.hivec.sandbox1293.opentlc.com",
   "keycloak": {
-    "url": "https://keycloak-labs-dev.apps.hivec.sandbox1459.opentlc.com/auth/",
+    "url": "https://keycloak-labs-test.apps.hivec.sandbox1293.opentlc.com/auth/",
     "realm": "pbrealm",
     "clientId": "pbclient",
     "redirectUri": "http://localhost:4200/tournament",
