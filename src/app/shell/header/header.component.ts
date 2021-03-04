@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { OAuthService } from 'angular-oauth2-oidc';
+import { KeycloakService } from 'keycloak-angular';
 
 @Component({
   selector: 'app-header',
@@ -10,7 +10,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 export class HeaderComponent implements OnInit {
   menuHidden = true;
 
-  constructor(private readonly oauthService: OAuthService) {}
+  constructor(private readonly keycloakSvc: KeycloakService) {}
 
   ngOnInit() {}
 
@@ -19,6 +19,6 @@ export class HeaderComponent implements OnInit {
   }
 
   logout() {
-    this.oauthService.logOut();
+    this.keycloakSvc.logout();
   }
 }

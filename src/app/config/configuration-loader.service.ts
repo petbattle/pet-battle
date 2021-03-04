@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Configuration } from './config.model';
+import { Configuration, KeycloakOpts } from './config.model';
 import { Logger } from '@app/core';
 const log = new Logger('ConfigurationLoader');
 @Injectable({
@@ -9,10 +9,16 @@ const log = new Logger('ConfigurationLoader');
 })
 export class ConfigurationLoader {
   private readonly CONFIGURATION_URL = './assets/configuration/config.json';
+  private _keycloak: KeycloakOpts = {
+    url: '',
+    realm: '',
+    clientId: '',
+    redirectUri: ''
+  };
   private _configuration: Configuration = {
     tournamentsUrl: '',
     catsUrl: '',
-    keycloak: {},
+    keycloak: this._keycloak,
     cat404: ''
   };
 

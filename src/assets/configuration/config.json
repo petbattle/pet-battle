@@ -2,13 +2,10 @@
   "catsUrl": "http://pet-battle-api-labs-dev.apps.hivec.sandbox1459.opentlc.com",
   "tournamentsUrl": "http://pet-battle-tournament-labs-dev.apps.hivec.sandbox1459.opentlc.com",
   "keycloak": {
-    "issuer": "https://keycloak-labs-dev.apps.hivec.sandbox1459.opentlc.com/auth/realms/pbrealm",
-    "redirectUri": "http://localhost:4200/tournament",
+    "url": "https://keycloak-labs-dev.apps.hivec.sandbox1459.opentlc.com/auth/",
+    "realm": "pbrealm",
     "clientId": "pbclient",
-    "responseType": "code",
-    "scope": "openid profile email",
-    "requireHttps": false,
-    "showDebugInformation": true,
-    "disableAtHashCheck": true
+    "redirectUri": "http://localhost:4200/tournament",
+    "enableLogging": true
   }
 }
