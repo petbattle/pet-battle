@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CatcardModule } from './cat-card/catcard.module';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -13,8 +13,8 @@ describe('CatsComponent', () => {
   let component: CatsComponent;
   let fixture: ComponentFixture<CatsComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [
         RouterTestingModule,
         Angulartics2Module.forRoot(),
@@ -26,7 +26,7 @@ describe('CatsComponent', () => {
       declarations: [CatsComponent],
       providers: [CatsService]
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(CatsComponent);

@@ -22,8 +22,8 @@ describe('ApiPrefixInterceptor', () => {
       ]
     });
 
-    http = TestBed.get(HttpClient);
-    httpMock = TestBed.get(HttpTestingController as Type<HttpTestingController>);
+    http = TestBed.inject(HttpClient);
+    httpMock = TestBed.inject(HttpTestingController as Type<HttpTestingController>);
   });
 
   afterEach(() => {

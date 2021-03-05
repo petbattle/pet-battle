@@ -4,7 +4,6 @@ import { TournamentsService } from './tournament.service';
 import { Logger } from '@app/core';
 import { LeaderBoard } from './tournament.mode';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ConfigurationLoader } from '@app/config/configuration-loader.service';
 import { Cat404 } from './cat404.component';
 import { KeycloakService } from 'keycloak-angular';
 
@@ -20,7 +19,6 @@ export class TournamentComponent implements OnInit {
   public leaderBoard: LeaderBoard[];
   public cat404: string;
   public cats: any[];
-  private decodedToken: any;
   private tournamentId: string;
 
   constructor(
