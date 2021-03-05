@@ -1,38 +1,44 @@
 import { NgModule, APP_INITIALIZER } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
-import { OAuthModule } from 'angular-oauth2-oidc';
+// import { HttpClientModule } from '@angular/common/http';
+// import { OAuthModule } from 'angular-oauth2-oidc';
 
-import { AuthConfigService } from './auth.config.service';
-import { OAuthModuleConfig } from './auth.config';
+// import { AuthConfigService } from './auth.config.service';
+// import { OAuthModuleConfig } from './auth.config';
 
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { AuthInterceptor } from './auth.interceptor';
+// import { HTTP_INTERCEPTORS } from '@angular/common/http';
+// import { AuthInterceptor } from './auth.interceptor';
 import { ConfigurationLoader } from '@app/config/configuration-loader.service';
+import { Configuration } from '@app/config/config.model';
+
+import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
 
 @NgModule({
-  imports: [HttpClientModule, OAuthModule.forRoot()],
+  imports: [KeycloakAngularModule],
   providers: [
     {
       provide: APP_INITIALIZER,
-      deps: [ConfigurationLoader, AuthConfigService],
-      useFactory: (configSvc: ConfigurationLoader, authConfigService: AuthConfigService) => {
+      deps: [ConfigurationLoader, KeycloakService],
+      useFactory: (configSvc: ConfigurationLoader, keycloak: KeycloakService) => {
         return () => {
           // to ensure the config for keycloak is avail prior to trying to connect to it....
-          return configSvc.loadConfiguration().then(() => {
-            return authConfigService.initAuth();
+          return configSvc.loadConfiguration().then((allConfig: Configuration) => {
+            return keycloak.init({
+              config: {
+                url: allConfig.keycloak.url,
+                realm: allConfig.keycloak.realm,
+                clientId: allConfig.keycloak.clientId
+              },
+              initOptions: {
+                onLoad: 'check-sso',
+                enableLogging: true || allConfig.keycloak.enableLogging,
+                silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html'
+              }
+            });
           });
         };
       },
       multi: true
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    },
-    AuthConfigService,
-    // PbAuthConfig,
-    OAuthModuleConfig
+    }
   ]
 })
 export class AuthConfigModule {}

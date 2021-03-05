@@ -1,8 +1,14 @@
-import { AuthConfig } from 'angular-oauth2-oidc';
-
 export interface Configuration {
   tournamentsUrl: string;
   catsUrl: string;
-  keycloak: AuthConfig;
+  keycloak: KeycloakOpts;
   cat404: string;
+}
+
+export interface KeycloakOpts {
+  url: string;
+  realm: string;
+  clientId: string;
+  redirectUri: string;
+  enableLogging?: boolean;
 }

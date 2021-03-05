@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-
-import { OAuthService } from 'angular-oauth2-oidc';
+import { Router } from '@angular/router';
+import { KeycloakService } from 'keycloak-angular';
 
 @Component({
   selector: 'app-header',
@@ -9,8 +9,15 @@ import { OAuthService } from 'angular-oauth2-oidc';
 })
 export class HeaderComponent implements OnInit {
   menuHidden = true;
+  buttonText: string;
+  isLoggedIn: boolean;
 
-  constructor(private readonly oauthService: OAuthService) {}
+  constructor(private readonly keycloakSvc: KeycloakService, private router: Router) {
+    this.keycloakSvc.isLoggedIn().then(isLoggedIn => {
+      this.isLoggedIn = isLoggedIn;
+      this.buttonText = isLoggedIn ? 'Logout' : 'Login';
+    });
+  }
 
   ngOnInit() {}
 
@@ -18,7 +25,13 @@ export class HeaderComponent implements OnInit {
     this.menuHidden = !this.menuHidden;
   }
 
-  logout() {
-    this.oauthService.logOut();
+  async logout() {
+    if (this.isLoggedIn) {
+      await this.keycloakSvc.logout(`${window.location.origin}/home`);
+    } else {
+      await this.keycloakSvc.login({
+        redirectUri: `${window.location.origin}${this.router.url}`
+      });
+    }
   }
 }

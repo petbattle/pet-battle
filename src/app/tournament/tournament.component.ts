@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 
 import { TournamentsService } from './tournament.service';
 import { Logger } from '@app/core';
-import { OAuthService } from 'angular-oauth2-oidc';
 import { LeaderBoard } from './tournament.mode';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConfigurationLoader } from '@app/config/configuration-loader.service';
 import { Cat404 } from './cat404.component';
+import { KeycloakService } from 'keycloak-angular';
 
 const log = new Logger('TournamentComponent');
 
@@ -16,7 +16,7 @@ const log = new Logger('TournamentComponent');
   styleUrls: ['./tournament.component.scss']
 })
 export class TournamentComponent implements OnInit {
-  public identity: any;
+  public name: string;
   public leaderBoard: LeaderBoard[];
   public cat404: string;
   public cats: any[];
@@ -25,9 +25,9 @@ export class TournamentComponent implements OnInit {
 
   constructor(
     private tournamentSvc: TournamentsService,
-    private oAuthSvc: OAuthService,
     private modalService: NgbModal,
-    private notFound: Cat404
+    private notFound: Cat404,
+    private keycloakSvc: KeycloakService
   ) {
     this.cat404 = this.notFound.cat404;
     this.leaderBoard = [];
@@ -41,18 +41,9 @@ export class TournamentComponent implements OnInit {
       this.refreshLeaderBoard();
     });
 
-    this.identity = this.oAuthSvc ? this.oAuthSvc.getIdentityClaims() : {};
-    const base64Url = this.oAuthSvc.getAccessToken() ? this.oAuthSvc.getAccessToken().split('.')[1] : '';
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map(c => {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        })
-        .join('')
-    );
-    this.decodedToken = jsonPayload ? JSON.parse(jsonPayload) : {};
+    this.keycloakSvc.loadUserProfile().then(userprofile => {
+      this.name = `${userprofile.firstName} ${userprofile.lastName}`;
+    });
   }
 
   ngOnInit() {}
@@ -97,7 +88,7 @@ export class TournamentComponent implements OnInit {
     });
   }
   hasAdminRole(): boolean {
-    return this.decodedToken.realm_access ? this.decodedToken.realm_access.roles.indexOf('pbadmin') > -1 : false;
+    return this.keycloakSvc.getUserRoles().indexOf('pbadmin') > -1;
   }
   // Cat selecting modal ztuff
   openScrollableContent(longContent: any) {

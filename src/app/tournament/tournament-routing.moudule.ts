@@ -9,8 +9,8 @@ const routes: Routes = [
   {
     path: '',
     component: TournamentComponent,
-    data: { title: 'Tournament', roles: ['pbplayer'] }
-    // canActivate: [AuthGuard]
+    data: { title: 'Tournament', roles: ['pbplayer'] },
+    canActivate: [AuthGuard]
   }
 ];
 
