@@ -5,6 +5,7 @@ springdo-petbattlepipeline-secret.yml
 /dist
 /tmp
 /out-tsc
+junit.xml
 # Only exists if Bazel was run
 /bazel-out
 

@@ -105,7 +105,8 @@
               "watch": false,
               "ci": true,
               "coverage": true,
-              "silent": true
+              "silent": true,
+              "reporters": ["default", "jest-junit"]
             }
           }
         },
