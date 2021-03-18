@@ -63,3 +63,4 @@ pet-battle.yaml
 .DS_Store
 Thumbs.db
 .scannerwork/
+petbattle-jenkinspb-secret.yml
