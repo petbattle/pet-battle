@@ -8,7 +8,7 @@ pipeline {
 		// Job name contains the branch eg pet-battle-feature%2Fjenkins-123
 		// ensure the name is k8s compliant
 		JOB_NAME = "${JOB_NAME}".replace("%2F", "-").replace("/", "-")
-		NAME = "${JOB_NAME}".split("/")[0]
+		// NAME = "${JOB_NAME}".split("/")[0]
 		GIT_SSL_NO_VERIFY = true
 
 		// ArgoCD Config Repo
@@ -49,7 +49,7 @@ pipeline {
 					steps {
 						script {
 							// ensure the name is k8s compliant
-							// env.NAME = "${JOB_NAME}".split("/")[0]
+							env.NAME = "${JOB_NAME}".split("/")[0]
 							env.APP_NAME = "${NAME}".replace("/", "-").toLowerCase()
 							env.DESTINATION_NAMESPACE = "labs-test"
 							// External image push registry info
@@ -76,7 +76,9 @@ pipeline {
 							env.DESTINATION_NAMESPACE = "labs-dev"
 							env.IMAGE_NAMESPACE = "${DESTINATION_NAMESPACE}"
 							env.IMAGE_REPOSITORY = 'image-registry.openshift-image-registry.svc:5000'
+
 							// ammend the name to create 'sandbox' deploys based on current branch
+							env.NAME = "${JOB_NAME}".split("/")[0]
 							env.APP_NAME = "${GIT_BRANCH}-${NAME}".replace("/", "-").toLowerCase()
 							env.NODE_ENV = "test"
 							env.DEV_BUILD = true
