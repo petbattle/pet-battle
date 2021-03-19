@@ -182,22 +182,23 @@ pipeline {
 				echo '### Patch Helm Chart ###'
 				sh '''
 					# might be overkill...
-					yq w -i chart/Chart.yaml 'appVersion' ${VERSION}
-					yq w -i chart/Chart.yaml 'version' ${VERSION}
+					yq eval -i .appVersion=\"${VERSION}\" "chart/Chart.yaml"
+					yq eval -i .version=\"${VERSION}\" "chart/Chart.yaml"
 
-					yq w -i chart/Chart.yaml 'name' ${APP_NAME}
+					# over write the chart name for features / sandbox dev
+					yq eval -i .name=\"${APP_NAME}\" "chart/Chart.yaml"
 					
 					# probs point to the image inside ocp cluster or perhaps an external repo?
-					yq w -i chart/values.yaml 'image_repository' ${IMAGE_REPOSITORY}
-					yq w -i chart/values.yaml 'image_name' ${APP_NAME}
-					yq w -i chart/values.yaml 'image_namespace' ${TARGET_NAMESPACE}
+					yq eval -i .image_repository=\"${IMAGE_REPOSITORY}\" "chart/values.yaml"
+					yq eval -i .image_name=\"${APP_NAME}\" "chart/values.yaml"
+					yq eval -i .image_namespace=\"${TARGET_NAMESPACE}\" "chart/values.yaml"
 					
 					# latest built image
-					yq w -i chart/values.yaml 'app_tag' ${VERSION}
+					yq eval -i .app_tag=\"${VERSION}\" "chart/values.yaml"
 				'''
 				echo '### Publish Helm Chart ###'
 				sh '''
-					# package and release helm chart - could only do this if release candidate
+					# package and release helm chart - could only do this if release candidate only 
     			helm package --dependency-update chart/  --app-version ${VERSION} --version ${VERSION}
 					curl -v -f -u ${NEXUS_CREDS} http://sonatype-nexus-service:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_HELM}/ --upload-file ${APP_NAME}-${VERSION}.tgz
 				'''
@@ -239,12 +240,15 @@ pipeline {
 					steps {
 						echo '### Commit new image tag to git ###'
 						sh  '''
-							# patch ArgoCD App config with new chart version
+							git clone https://${GIT_CREDS}@${ARGOCD_CONFIG_REPO} config-repo
 							cd config-repo
-							yq w -i ${ARGOCD_CONFIG_REPO_PATH} "applications.pet_battle_test.source_ref" ${VERSION}
-							yq w -i ${ARGOCD_CONFIG_REPO_PATH} "applications.pet_battle_test.values.app_tag" ${VERSION}
-							yq w -i ${ARGOCD_CONFIG_REPO_PATH} "applications.pet_battle_test.values.image_namespace" ${IMAGE_NAMESPACE}
-							yq w -i ${ARGOCD_CONFIG_REPO_PATH} "applications.pet_battle_test.values.image_repository" ${IMAGE_REPOSITORY}
+							git checkout ${ARGOCD_CONFIG_REPO_BRANCH} # master or main
+				
+							# patch ArgoCD App config with new chart version
+							yq eval -i .applications.pet_battle_test.source_ref=\"${VERSION}\" "${ARGOCD_CONFIG_REPO_PATH}"
+							yq eval -i .applications.pet_battle_test.values.app_tag=\"${VERSION}\" "${ARGOCD_CONFIG_REPO_PATH}"
+							yq eval -i .applications.pet_battle_test.values.image_namespace=\"${IMAGE_NAMESPACE}\" "${ARGOCD_CONFIG_REPO_PATH}"
+							yq eval -i .applications.pet_battle_test.values.image_repository=\"${IMAGE_REPOSITORY}\" "${ARGOCD_CONFIG_REPO_PATH}"
 
 							# Commit the changes :P
 							git config --global user.email "jenkins@rht-labs.bot.com"
