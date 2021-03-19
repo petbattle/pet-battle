@@ -182,19 +182,19 @@ pipeline {
 				echo '### Patch Helm Chart ###'
 				sh '''
 					# might be overkill...
-					yq eval -i .appVersion=\"${VERSION}\" "chart/Chart.yaml"
-					yq eval -i .version=\"${VERSION}\" "chart/Chart.yaml"
+					yq eval -i .appVersion=\\"${VERSION}\\" "chart/Chart.yaml"
+					yq eval -i .version=\\"${VERSION}\\" "chart/Chart.yaml"
 
 					# over write the chart name for features / sandbox dev
-					yq eval -i .name=\"${APP_NAME}\" "chart/Chart.yaml"
+					yq eval -i .name=\\"${APP_NAME}\\" "chart/Chart.yaml"
 					
 					# probs point to the image inside ocp cluster or perhaps an external repo?
-					yq eval -i .image_repository=\"${IMAGE_REPOSITORY}\" "chart/values.yaml"
-					yq eval -i .image_name=\"${APP_NAME}\" "chart/values.yaml"
-					yq eval -i .image_namespace=\"${TARGET_NAMESPACE}\" "chart/values.yaml"
+					yq eval -i .image_repository=\\"${IMAGE_REPOSITORY}\\" "chart/values.yaml"
+					yq eval -i .image_name=\\"${APP_NAME}\\" "chart/values.yaml"
+					yq eval -i .image_namespace=\\"${TARGET_NAMESPACE}\\" "chart/values.yaml"
 					
 					# latest built image
-					yq eval -i .app_tag=\"${VERSION}\" "chart/values.yaml"
+					yq eval -i .app_tag=\\"${VERSION}\\" "chart/values.yaml"
 				'''
 				echo '### Publish Helm Chart ###'
 				sh '''
@@ -245,10 +245,10 @@ pipeline {
 							git checkout ${ARGOCD_CONFIG_REPO_BRANCH} # master or main
 				
 							# patch ArgoCD App config with new chart version
-							yq eval -i .applications.pet_battle_test.source_ref=\"${VERSION}\" "${ARGOCD_CONFIG_REPO_PATH}"
-							yq eval -i .applications.pet_battle_test.values.app_tag=\"${VERSION}\" "${ARGOCD_CONFIG_REPO_PATH}"
-							yq eval -i .applications.pet_battle_test.values.image_namespace=\"${IMAGE_NAMESPACE}\" "${ARGOCD_CONFIG_REPO_PATH}"
-							yq eval -i .applications.pet_battle_test.values.image_repository=\"${IMAGE_REPOSITORY}\" "${ARGOCD_CONFIG_REPO_PATH}"
+							yq eval -i .applications.pet_battle_test.source_ref=\\"${VERSION}\\" "${ARGOCD_CONFIG_REPO_PATH}"
+							yq eval -i .applications.pet_battle_test.values.app_tag=\\"${VERSION}\\" "${ARGOCD_CONFIG_REPO_PATH}"
+							yq eval -i .applications.pet_battle_test.values.image_namespace=\\"${IMAGE_NAMESPACE}\\" "${ARGOCD_CONFIG_REPO_PATH}"
+							yq eval -i .applications.pet_battle_test.values.image_repository=\\"${IMAGE_REPOSITORY}\\" "${ARGOCD_CONFIG_REPO_PATH}"
 
 							# Commit the changes :P
 							git config --global user.email "jenkins@rht-labs.bot.com"
