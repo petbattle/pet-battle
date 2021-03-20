@@ -69,7 +69,7 @@ pipeline {
 							}
 					}
 					when {
-						expression { !GIT_BRANCH.startsWith("master") || !GIT_BRANCH.startsWith("main") }
+						expression { return !(GIT_BRANCH.startsWith("master") || !GIT_BRANCH.startsWith("main") )}
 					}
 					steps {
 						script {
