@@ -7,7 +7,7 @@ pipeline {
 
 		// Job name contains the branch eg pet-battle-feature%2Fjenkins-123
 		// ensure the name is k8s compliant
-		JOB_NAME = "${JOB_NAME}".replace("%2F", "-").replace("/", "-")
+		// JOB_NAME = "${JOB_NAME}".replace("%2F", "-").replace("/", "-")
 		// NAME = "${JOB_NAME}".split("/")[0]
 		GIT_SSL_NO_VERIFY = true
 
@@ -35,10 +35,10 @@ pipeline {
 	}
 
 	stages {
-		stage('Perpare Environment') {
+		stage('🗒️ Perpare Environment') {
 			failFast true
 			parallel {
-				stage("Release Build") {
+				stage("📝 Release Build") {
 					options {
 						skipDefaultCheckout(true)
 					}
@@ -59,7 +59,7 @@ pipeline {
 						}
 					}
 				}
-				stage("Sandbox Build") {
+				stage("📝 Sandbox Build") {
 					options {
 						skipDefaultCheckout(true)
 					}
@@ -88,7 +88,7 @@ pipeline {
 			}
 		}
 
-		stage("⚒ Build (Compile App)") {
+		stage("🧰 Build (Compile App)") {
 			agent { label "jenkins-agent-npm" }
 			steps {
 				script {
@@ -205,10 +205,10 @@ pipeline {
 			}
 		}
 
-		stage("Deploy - App") {
+		stage("🏗️ Deploy - App") {
 			failFast true
 			parallel {
-				stage("Sandbox - Helm Install"){
+				stage("🏖️ Sandbox - Helm Install"){
 					options {
 						skipDefaultCheckout(true)
 					}
@@ -225,7 +225,7 @@ pipeline {
 						'''
 					}
 				}
-				stage("TestEnv - ArgoCD Git Commit") {
+				stage("🧪 TestEnv - ArgoCD Git Commit") {
 					options {
 							skipDefaultCheckout(true)
 					}
