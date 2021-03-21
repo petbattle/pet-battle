@@ -39,6 +39,10 @@ spec:
         volumeMounts:
           - mountPath: "/opt/app-root/src/assets/configuration/"
             name: "{{ include "pet-battle.fullname" . }}-config"
+          {{- if .Values.fathom }}
+          - mountPath: "/opt/app-root/src/assets/analytics/"
+            name: "fathom-config"
+          {{- end }}          
         readinessProbe:
           httpGet:
             path: /
@@ -55,6 +59,12 @@ spec:
         configMap:
           name: "{{ include "pet-battle.fullname" . }}-environment"
           defaultMode: 420
+      {{- if .Values.fathom }}
+      - name: "fathom-config"
+        configMap:
+          name: "fathom-client-config"
+          defaultMode: 420
+      {{- end }}    
   test: false
   triggers:
   - type: ConfigChange

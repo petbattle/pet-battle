@@ -17,15 +17,16 @@ app_tag: latest
 a_b_deploy:
   weight: 100
   # svc_name:
-
+fathom: true
 # OCP route
 route: true
 # custom end point injected by config map. This is likely to changed
 config_map: '{
-  "catsUrl": "http://pet-battle-api-labs-test.apps.hivec.sandbox1459.opentlc.com",
-  "tournamentsUrl": "http://pet-battle-tournament-labs-test.apps.hivec.sandbox1459.opentlc.com",
+  "catsUrl": "https://pet-battle-api-labs-test.apps.hivec.sandbox380.opentlc.com",
+  "tournamentsUrl": "https://pet-battle-tournament-labs-test.apps.hivec.sandbox380.opentlc.com",
+  "fathomUrl": "https://fathom-sm-test.apps.hivec.sandbox380.opentlc.com",
   "keycloak": {
-    "url": "https://keycloak-labs-test.apps.hivec.sandbox1293.opentlc.com/auth/",
+    "url": "https://keycloak-labs-test.apps.hivec.sandbox380.opentlc.com/auth/",
     "realm": "pbrealm",
     "clientId": "pbclient",
     "redirectUri": "http://localhost:4200/tournament",
