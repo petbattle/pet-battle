@@ -7,10 +7,10 @@ scanner(
     //token: "019d1e2e04eefdcd0caee1468f39a45e69d33d3f",
     options: {
       'sonar.login': 'admin',
-      'sonar.password': 'admin',
+      'sonar.password': 'admin123',
       'sonar.projectName': 'Pet Battle',
       'sonar.projectDescription': 'Pet Battle UI',
-      'sonar.projectVersion': '1.0.2',
+      'sonar.projectVersion': '1.0.5',
       'sonar.sources': 'src',
       'sonar.tests': 'src',
       'sonar.inclusions': '**', // Entry point of your code
