@@ -17,7 +17,7 @@ image_version: latest
 a_b_deploy:
   weight: 100
   # svc_name:
-fathom: true
+fathom: false
 # OCP route
 route: true
 # custom end point injected by config map. This is likely to changed
