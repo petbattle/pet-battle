@@ -198,8 +198,8 @@ pipeline {
 				echo '### Publish Helm Chart ###'
 				sh '''
 					# package and release helm chart - could only do this if release candidate only 
-    			helm package --dependency-update chart/  --app-version ${VERSION} --version ${VERSION}
-					curl -v -f -u ${NEXUS_CREDS} http://sonatype-nexus-service:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_HELM}/ --upload-file ${APP_NAME}-${VERSION}.tgz
+    			helm package --dependency-update chart/  --app-version ${VERSION}
+					curl -v -f -u ${NEXUS_CREDS} http://sonatype-nexus-service:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_HELM}/ --upload-file ${APP_NAME}-*.tgz
 				'''
 			}
 		}
