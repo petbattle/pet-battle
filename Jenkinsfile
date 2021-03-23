@@ -183,7 +183,6 @@ pipeline {
 				sh '''
 					# might be overkill...
 					yq eval -i .appVersion=\\"${VERSION}\\" "chart/Chart.yaml"
-					yq eval -i .version=\\"${VERSION}\\" "chart/Chart.yaml"
 
 					# over write the chart name for features / sandbox dev
 					yq eval -i .name=\\"${APP_NAME}\\" "chart/Chart.yaml"
