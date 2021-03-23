@@ -2,8 +2,8 @@ apiVersion: v2
 name: pet-battle
 description: A Helm chart to deploy the frontend of the Pet Battle
 type: application
-version: 1.0.5
-appVersion: "1.1.2"
+version: 1.2.2
+appVersion: "1.2.2"
 home: https://springdo.github.io/pet-battle
 maintainers:
   - name: springdo
