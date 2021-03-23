@@ -69,7 +69,7 @@ pipeline {
 							}
 					}
 					when {
-						expression { return !(GIT_BRANCH.startsWith("master") || !GIT_BRANCH.startsWith("main") )}
+						expression { return !(GIT_BRANCH.startsWith("master") || GIT_BRANCH.startsWith("main") )}
 					}
 					steps {
 						script {
@@ -213,7 +213,7 @@ pipeline {
 					}
 					agent { label "jenkins-agent-helm" }
 					when {
-						expression { !GIT_BRANCH.startsWith("main") || !GIT_BRANCH.startsWith("master") }
+						expression { return !(GIT_BRANCH.startsWith("master") || GIT_BRANCH.startsWith("main") )}
 					}
 					steps {
 						// TODO - if SANDBOX, create release in rando ns
