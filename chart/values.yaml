@@ -24,7 +24,6 @@ route: true
 config_map: '{
   "catsUrl": "https://pet-battle-api-labs-test.apps.hivec.sandbox380.opentlc.com",
   "tournamentsUrl": "https://pet-battle-tournament-labs-test.apps.hivec.sandbox380.opentlc.com",
-  "fathomUrl": "https://fathom-sm-test.apps.hivec.sandbox380.opentlc.com",
   "keycloak": {
     "url": "https://keycloak-labs-test.apps.hivec.sandbox380.opentlc.com/auth/",
     "realm": "pbrealm",
