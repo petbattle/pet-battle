@@ -239,13 +239,14 @@ pipeline {
 					steps {
 						echo '### Commit new image tag to git ###'
 						sh  '''
+							CHART_VERSION=$(yq eval .version chart/Chart.yaml)
 							git clone https://${GIT_CREDS}@${ARGOCD_CONFIG_REPO} config-repo
 							cd config-repo
 							git checkout ${ARGOCD_CONFIG_REPO_BRANCH} # master or main
 				
 							# patch ArgoCD App config with new chart version
-							yq eval -i .applications.pet_battle_test.source_ref=\\"${VERSION}\\" "${ARGOCD_CONFIG_REPO_PATH}"
-							yq eval -i .applications.pet_battle_test.values.app_tag=\\"${VERSION}\\" "${ARGOCD_CONFIG_REPO_PATH}"
+							yq eval -i .applications.pet_battle_test.source_ref=\\"${CHART_VERSION}\\" "${ARGOCD_CONFIG_REPO_PATH}"
+							yq eval -i .applications.pet_battle_test.values.image_version=\\"${VERSION}\\" "${ARGOCD_CONFIG_REPO_PATH}"
 							yq eval -i .applications.pet_battle_test.values.image_namespace=\\"${IMAGE_NAMESPACE}\\" "${ARGOCD_CONFIG_REPO_PATH}"
 							yq eval -i .applications.pet_battle_test.values.image_repository=\\"${IMAGE_REPOSITORY}\\" "${ARGOCD_CONFIG_REPO_PATH}"
 
