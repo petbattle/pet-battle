@@ -9,7 +9,7 @@
   "attr-no-duplication": true,
   "title-require": true,
   "tag-self-close": true,
-  "head-script-disabled": true,
+  "head-script-disabled": false,
   "doctype-html5": true,
   "id-class-value": "dash",
   "style-disabled": true,
