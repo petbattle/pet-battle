@@ -225,9 +225,6 @@ pipeline {
 					}
 				}
 				stage("🧪 TestEnv - ArgoCD Git Commit") {
-					options {
-							skipDefaultCheckout(true)
-					}
 					agent {
 							node {
 									label "jenkins-agent-argocd"
