@@ -32,7 +32,7 @@
               o.src = t;
               o.id = 'fathom-script';
               m.parentNode.insertBefore(o, m);
-            })(document, window, `https://${fathom.host}/tracker.js`, 'fathom');
+            })(document, window, `//${fathom.host}/tracker.js`, 'fathom');
             window.fathom('set', 'siteId', `${fathom.Data.trackingId}`);
             window.fathom('trackPageview');
           })

@@ -194,7 +194,7 @@ pipeline {
 					yq eval -i .image_namespace=\\"${TARGET_NAMESPACE}\\" "chart/values.yaml"
 					
 					# latest built image
-					yq eval -i .app_tag=\\"${VERSION}\\" "chart/values.yaml"
+					yq eval -i .image_version=\\"${VERSION}\\" "chart/values.yaml"
 				'''
 				echo '### Publish Helm Chart ###'
 				sh '''

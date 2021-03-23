@@ -27,7 +27,7 @@ spec:
         {{- include "pet-battle.selectorLabels" . | nindent 8 }}
     spec:
       containers:
-      - image: "{{ .Values.image_repository }}/{{ .Values.image_namespace }}/{{ .Values.image_name }}:{{ .Values.app_tag }}"
+      - image: "{{ .Values.image_repository }}/{{ .Values.image_namespace }}/{{ .Values.image_name }}:{{ .Values.image_version }}"
         imagePullPolicy: Always
         name: {{ include "pet-battle.name" . }}
         ports:

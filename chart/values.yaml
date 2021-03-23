@@ -13,7 +13,7 @@ image_repository: quay.io
 image_name: pet-battle
 image_namespace: petbattle
 # likely over written by the Argo definition
-app_tag: latest
+image_version: latest
 a_b_deploy:
   weight: 100
   # svc_name:
