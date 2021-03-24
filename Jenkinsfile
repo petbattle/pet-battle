@@ -239,7 +239,10 @@ pipeline {
 							cd config-repo
 							git checkout ${ARGOCD_CONFIG_REPO_BRANCH} # master or main
 				
-							# patch ArgoCD App config with new chart version
+							PREVIOUS_VERSION=$(yq eval .applications.pet_battle_test.values.image_version "${ARGOCD_CONFIG_REPO_PATH}")
+							PREVIOUS_CHART_VERSION=$(yq eval .applications.pet_battle_test.source_ref "${ARGOCD_CONFIG_REPO_PATH}")
+
+							# patch ArgoCD App config with new app & chart version
 							yq eval -i .applications.pet_battle_test.source_ref=\\"${CHART_VERSION}\\" "${ARGOCD_CONFIG_REPO_PATH}"
 							yq eval -i .applications.pet_battle_test.values.image_version=\\"${VERSION}\\" "${ARGOCD_CONFIG_REPO_PATH}"
 							yq eval -i .applications.pet_battle_test.values.image_namespace=\\"${IMAGE_NAMESPACE}\\" "${ARGOCD_CONFIG_REPO_PATH}"
@@ -249,11 +252,30 @@ pipeline {
 							git config --global user.email "jenkins@rht-labs.bot.com"
 							git config --global user.name "Jenkins"
 							git config --global push.default simple
-
 							git add ${ARGOCD_CONFIG_REPO_PATH}
 							git commit -m "🚀 AUTOMATED COMMIT - Deployment of ${APP_NAME} at version ${VERSION} 🚀" || rc=$?
 							git remote set-url origin  https://${GIT_CREDS}@${ARGOCD_CONFIG_REPO}
 							git push -u origin ${ARGOCD_CONFIG_REPO_BRANCH}
+
+							# verify the deployment by checking the VERSION against PREVIOUS_VERSION
+							until [ "$label" == "${VERSION}" ]; do
+								echo "${APP_NAME}-${VERSION} version hasn't started to roll out"
+								label=$(oc get dc/${APP_NAME} -o yaml -n ${DESTINATION_NAMESPACE}  | yq e '.metadata.labels["app.kubernetes.io/version"]' -)
+								sleep 1
+							done
+							oc rollout status --timeout=2m deployment/${APP_NAME} -n ${DESTINATION_NAMESPACE} || rc1=$?
+							if [[ $rc1 != '' ]]; then
+								yq eval -i .applications.pet_battle_test.source_ref=\\"${PREVIOUS_CHART_VERSION}\\" "${ARGOCD_CONFIG_REPO_PATH}"
+								yq eval -i .applications.pet_battle_test.values.image_version=\\"${PREVIOUS_VERSION}\\" "${ARGOCD_CONFIG_REPO_PATH}"
+
+								git add ${ARGOCD_CONFIG_REPO_PATH}
+								git commit -m "😢🤦🏻‍♀️ AUTOMATED COMMIT - ${APP_NAME} deployment is reverted to version ${PREVIOUS_VERSION} 😢🤦🏻‍♀️" || rc2=$?
+								git push -u origin ${ARGOCD_CONFIG_REPO_BRANCH}
+								# TODO - check the roll back has not failed also...
+								exit $rc1
+							else
+									echo "${APP_NAME} v${VERSION} deployment in ${DESTINATION_NAMESPACE} is successful 🎉 🍪"
+							fi
 						'''
 					}
 				}
