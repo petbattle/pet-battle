@@ -208,9 +208,6 @@ pipeline {
 			failFast true
 			parallel {
 				stage("🏖️ Sandbox - Helm Install"){
-					options {
-						skipDefaultCheckout(true)
-					}
 					agent { label "jenkins-agent-helm" }
 					when {
 						expression { return !(GIT_BRANCH.startsWith("master") || GIT_BRANCH.startsWith("main") )}
@@ -218,9 +215,10 @@ pipeline {
 					steps {
 						// TODO - if SANDBOX, create release in rando ns
 						sh '''
+							CHART_VERSION=$(yq eval .version chart/Chart.yaml)
 							helm upgrade --install ${APP_NAME} --set application.fullname=${APP_NAME} \
 									--namespace=${DESTINATION_NAMESPACE} \
-									http://sonatype-nexus-service:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_HELM}/${APP_NAME}-${VERSION}.tgz
+									http://sonatype-nexus-service:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_HELM}/${APP_NAME}-${CHART_VERSION}.tgz
 						'''
 					}
 				}
