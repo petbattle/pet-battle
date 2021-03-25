@@ -1,6 +1,6 @@
 {
   "name": "pet-battle",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "private": true,
   "scripts": {
     "ng": "ng",
