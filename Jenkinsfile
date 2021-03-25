@@ -190,7 +190,7 @@ pipeline {
 					# probs point to the image inside ocp cluster or perhaps an external repo?
 					yq eval -i .image_repository=\\"${IMAGE_REPOSITORY}\\" "chart/values.yaml"
 					yq eval -i .image_name=\\"${APP_NAME}\\" "chart/values.yaml"
-					yq eval -i .image_namespace=\\"${TARGET_NAMESPACE}\\" "chart/values.yaml"
+					yq eval -i .image_namespace=\\"${IMAGE_NAMESPACE}\\" "chart/values.yaml"
 					
 					# latest built image
 					yq eval -i .image_version=\\"${VERSION}\\" "chart/values.yaml"
