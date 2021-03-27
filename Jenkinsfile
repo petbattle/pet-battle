@@ -180,6 +180,9 @@ pipeline {
 					helm lint chart
 				'''
 				echo '### Patch Helm Chart ###'
+				script {
+						env.CHART_VERSION = sh(returnStdout: true, script: "yq eval .version chart/Chart.yaml").trim()
+				}
 				sh '''
 					# might be overkill...
 					yq eval -i .appVersion=\\"${VERSION}\\" "chart/Chart.yaml"
@@ -208,6 +211,9 @@ pipeline {
 			failFast true
 			parallel {
 				stage("🏖️ Sandbox - Helm Install"){
+					options {
+						skipDefaultCheckout(true)
+					}  
 					agent { label "jenkins-agent-helm" }
 					when {
 						expression { return !(GIT_BRANCH.startsWith("master") || GIT_BRANCH.startsWith("main") )}
@@ -215,7 +221,6 @@ pipeline {
 					steps {
 						// TODO - if SANDBOX, create release in rando ns
 						sh '''
-							CHART_VERSION=$(yq eval .version chart/Chart.yaml)
 							helm upgrade --install ${APP_NAME} --set application.fullname=${APP_NAME} \
 									--namespace=${DESTINATION_NAMESPACE} \
 									http://sonatype-nexus-service:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_HELM}/${APP_NAME}-${CHART_VERSION}.tgz
@@ -223,18 +228,13 @@ pipeline {
 					}
 				}
 				stage("🧪 TestEnv - ArgoCD Git Commit") {
-					agent {
-							node {
-									label "jenkins-agent-argocd"
-							}
-					}
+					agent { label "jenkins-agent-argocd" }
 					when {
 						expression { GIT_BRANCH.startsWith("master") || GIT_BRANCH.startsWith("main") }
 					}
 					steps {
 						echo '### Commit new image tag to git ###'
 						sh  '''
-							CHART_VERSION=$(yq eval .version chart/Chart.yaml)
 							git clone https://${GIT_CREDS}@${ARGOCD_CONFIG_REPO} config-repo
 							cd config-repo
 							git checkout ${ARGOCD_CONFIG_REPO_BRANCH} # master or main
