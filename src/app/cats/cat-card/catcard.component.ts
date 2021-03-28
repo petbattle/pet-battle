@@ -36,7 +36,7 @@ export class CatcardComponent implements OnInit {
     if (this.analytics) {
       // instrument the buttons
       const voting = vote ? 'UP_VOTE' : 'DOWN_VOTE';
-      this.matomoTracker.trackEvent('Voting', voting);
+      this.matomoTracker.trackEvent('A/B Tests', 'Voting', voting);
     }
     this.spinner = true;
     const body = { image: this.image, id: this.catId, count: this.currentVoteCount, vote };
