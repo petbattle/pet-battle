@@ -8,6 +8,7 @@ import { AuthConfigModule } from '@app/auth/auth.config.module';
 
 import { ShellComponent } from './shell.component';
 import { HeaderComponent } from './header/header.component';
+import { MatomoModule } from 'ngx-matomo-v9';
 
 describe('ShellComponent', () => {
   let component: ShellComponent;
@@ -15,7 +16,7 @@ describe('ShellComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RouterTestingModule, TranslateModule.forRoot(), NgbModule, CoreModule, AuthConfigModule],
+      imports: [RouterTestingModule, TranslateModule.forRoot(), NgbModule, CoreModule, AuthConfigModule, MatomoModule],
       declarations: [HeaderComponent, ShellComponent]
     }).compileComponents();
   });

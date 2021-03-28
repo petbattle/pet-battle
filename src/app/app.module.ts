@@ -13,6 +13,7 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
 import { AuthConfigModule } from '@app/auth/auth.config.module';
+import { MatomoModule } from 'ngx-matomo-v9';
 
 import { ConfigurationLoader } from '@app/config/configuration-loader.service';
 
@@ -30,6 +31,7 @@ export function loadConfiguration(configService: ConfigurationLoader) {
   ],
   imports: [
     BrowserModule,
+    MatomoModule,
     FormsModule,
     HttpClientModule,
     NgbModule,

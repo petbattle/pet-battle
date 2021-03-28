@@ -5,6 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AuthConfigModule } from '@app/auth/auth.config.module';
 import { HeaderComponent } from './header.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { MatomoModule } from 'ngx-matomo-v9';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -12,7 +13,14 @@ describe('HeaderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RouterTestingModule, NgbModule, TranslateModule.forRoot(), AuthConfigModule, HttpClientTestingModule],
+      imports: [
+        RouterTestingModule,
+        NgbModule,
+        TranslateModule.forRoot(),
+        AuthConfigModule,
+        HttpClientTestingModule,
+        MatomoModule
+      ],
       declarations: [HeaderComponent]
     }).compileComponents();
   });

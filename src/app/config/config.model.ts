@@ -1,6 +1,7 @@
 export interface Configuration {
   tournamentsUrl: string;
   catsUrl: string;
+  matomoUrl: string;
   keycloak: KeycloakOpts;
   cat404: string;
 }

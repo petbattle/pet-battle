@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { CatsService } from '../cats.service';
+import { ConfigurationLoader } from '@app/config/configuration-loader.service';
+import { MatomoTracker } from 'ngx-matomo-v9';
 
 @Component({
   selector: 'app-catcard',
@@ -12,10 +14,16 @@ export class CatcardComponent implements OnInit {
   public spinner = true;
   public compOver = false;
   private catId: string;
+  private analytics = false;
 
-  constructor(private catsService: CatsService) {}
+  constructor(
+    private catsService: CatsService,
+    private configSvc: ConfigurationLoader,
+    private matomoTracker: MatomoTracker
+  ) {}
 
   ngOnInit() {
+    this.analytics = this.configSvc.getConfiguration().matomoUrl ? true : false;
     this.catsService.getNewCat().subscribe(response => {
       this.image = response.image;
       this.currentVoteCount = response.count;
@@ -25,6 +33,11 @@ export class CatcardComponent implements OnInit {
   }
 
   getNewCat(vote: boolean) {
+    if (this.analytics) {
+      // instrument the buttons
+      const voting = vote ? 'UP_VOTE' : 'DOWN_VOTE';
+      this.matomoTracker.trackEvent('Voting', voting);
+    }
     this.spinner = true;
     const body = { image: this.image, id: this.catId, count: this.currentVoteCount, vote };
     vote ? this.currentVoteCount++ : this.currentVoteCount--;
