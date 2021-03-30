@@ -9,7 +9,7 @@ metadata:
   annotations:
     haproxy.router.openshift.io/balance: "roundrobin"
     {{- if .Values.a_b_deploy.svc_name }}
-    haproxy.router.openshift.io/disable_cookies: "true"
+    # haproxy.router.openshift.io/disable_cookies: "true"
     {{- end }}
 spec:
   port:
