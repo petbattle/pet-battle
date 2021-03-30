@@ -4,7 +4,8 @@ description: A Helm chart to deploy the frontend of the Pet Battle
 type: application
 version: 1.0.6
 appVersion: 0.0.1
-home: https://springdo.github.io/pet-battle
+home: https://petbattle.github.io/helm-charts
+icon: https://avatars1.githubusercontent.com/u/68044996?s=200&v=4
 maintainers:
   - name: springdo
   - name: eformat
