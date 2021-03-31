@@ -1,6 +1,6 @@
 apiVersion: v2
 name: pet-battle
-description: A Helm chart to deploy the frontend of the Pet Battle
+description: Pet Battle Frontend
 type: application
 version: 1.0.6
 appVersion: 0.0.1
