@@ -1,5 +1,7 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 springdo-petbattlepipeline-secret.yml
+policy/helm-output
+
 
 # Compiled output
 /dist
