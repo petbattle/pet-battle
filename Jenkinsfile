@@ -201,7 +201,7 @@ pipeline {
 				echo '### Conftest processed chart ###'
 				sh '''
 					helm template pb-test chart --output-dir policy/helm-output
-					for file in $(ls policy/**/templates); do; conftest test policy/helm-output/**/$file; done
+					# for file in $(ls policy/**/templates); do; conftest test policy/helm-output/**/$file; done
 				'''
 				echo '### Publish Helm Chart ###'
 				sh '''
