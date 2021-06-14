@@ -35,7 +35,7 @@ pipeline {
 	}
 
 	stages {
-		stage('🗒️ Perpare Environment') {
+		stage('🗒️ Prepare Environment') {
 			failFast true
 			parallel {
 				stage("📝 Release Build") {
