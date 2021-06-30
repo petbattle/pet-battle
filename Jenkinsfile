@@ -19,7 +19,6 @@ pipeline {
 		// Credentials bound in OpenShift
 		GIT_CREDS = credentials("${OPENSHIFT_BUILD_NAMESPACE}-git-auth")
 		NEXUS_CREDS = credentials("${OPENSHIFT_BUILD_NAMESPACE}-nexus-password")
-		ARGOCD_CREDS = credentials("${OPENSHIFT_BUILD_NAMESPACE}-argocd-token")
 
 		// Nexus Artifact repo 
 		NEXUS_REPO_NAME="labs-static"
