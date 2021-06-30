@@ -24,7 +24,7 @@ route: true
 config_map: '{
   "catsUrl": "https://pet-battle-api-labs-test.apps.hivec.sandbox1405.opentlc.com",
   "tournamentsUrl": "https://pet-battle-tournament-labs-test.apps.hivec.sandbox1405.opentlc.com",
-  "matomoUrl": "https://pba-matomo-exp.apps.hivec.sandbox1405.opentlc.com/",
+  "matomoUrl": "https://matomo-labs-ci-cd.apps.hivec.sandbox1405.opentlc.com/",
   "keycloak": {
     "url": "https://keycloak-labs-test.apps.hivec.sandbox1405.opentlc.com/auth/",
     "realm": "pbrealm",
