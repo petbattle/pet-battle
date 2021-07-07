@@ -56,6 +56,7 @@ pipeline {
 							env.QUAY_PUSH_SECRET = "petbattle-jenkinspb-pull-secret"
 							env.IMAGE_NAMESPACE = "petbattle"
 							env.IMAGE_REPOSITORY = "quay.io"
+              env.ARGOCD_CONFIG_REPO = ${ARGOCD_CONFIG_REPO}
 						}
             sh 'printenv'
 					}
