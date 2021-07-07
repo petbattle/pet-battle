@@ -12,7 +12,8 @@ pipeline {
 		GIT_SSL_NO_VERIFY = true
 
 		// ArgoCD Config Repo
-		ARGOCD_CONFIG_REPO = "github.com/petbattle/ubiquitous-journey.git"
+		// set this as an ENV_VAR on Jenkins to make this easier?
+    // ARGOCD_CONFIG_REPO = "github.com/petbattle/ubiquitous-journey.git"
 		ARGOCD_CONFIG_REPO_PATH = "applications/deployment/values-applications-test.yaml"
 		ARGOCD_CONFIG_REPO_BRANCH = "main"
 
