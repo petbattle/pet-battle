@@ -54,7 +54,7 @@ pipeline {
 							env.DESTINATION_NAMESPACE = "labs-test"
 							// External image push registry info
 							env.QUAY_PUSH_SECRET = "petbattle-jenkinspb-pull-secret"
-							env.IMAGE_NAMESPACE = "${QUAY_ACCOUNT}" ?: "petbattle"
+							env.IMAGE_NAMESPACE = "${QUAY_ACCOUNT}" != null ? "${QUAY_ACCOUNT}" : "petbattle"
 							env.IMAGE_REPOSITORY = "quay.io"
               env.ARGOCD_CONFIG_REPO = "${ARGOCD_CONFIG_REPO}"
 						}
