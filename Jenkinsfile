@@ -57,6 +57,7 @@ pipeline {
 							env.IMAGE_NAMESPACE = "petbattle"
 							env.IMAGE_REPOSITORY = "quay.io"
 						}
+            sh 'printenv'
 					}
 				}
 				stage("📝 Sandbox Build") {
