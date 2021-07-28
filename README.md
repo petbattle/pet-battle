@@ -37,7 +37,7 @@ oc scale dc/pet-battle --replicas=0
 oc scale dc/pet-battle --replicas=10
 ```
 
-## Deploy on OpenShift using RH Advanced Cluster Managemnt
+## Deploy on OpenShift using RH Advanced Cluster Management
 
 1. Log in to the hub cluster in which RHACM is installed
 
