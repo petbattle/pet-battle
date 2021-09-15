@@ -22,5 +22,6 @@
   },
   "angularCompilerOptions": {
     "preserveWhitespaces": true
-  }
+  },
+  "resolveJsonModule": true
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { KeycloakService } from 'keycloak-angular';
+import { version } from '../../../../package.json';
 
 @Component({
   selector: 'app-header',
@@ -8,6 +9,7 @@ import { KeycloakService } from 'keycloak-angular';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
+  public version: string = version;
   menuHidden = true;
   buttonText: string;
   isLoggedIn: boolean;
