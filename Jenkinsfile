@@ -21,7 +21,7 @@ pipeline {
 		GIT_CREDS = credentials("${OPENSHIFT_BUILD_NAMESPACE}-git-auth")
 		NEXUS_CREDS = credentials("${OPENSHIFT_BUILD_NAMESPACE}-nexus-password")
 
-		// Nexus Artifact repo 
+		// Nexus Artifact repo
 		NEXUS_REPO_NAME="labs-static"
 		NEXUS_REPO_HELM = "helm-charts"
 	}
@@ -91,7 +91,15 @@ pipeline {
 
 		stage("🧰 Build (Compile App)") {
 			agent { label "jenkins-agent-npm" }
+			options {
+				skipDefaultCheckout(true)
+				}
 			steps {
+			  sh '''
+				git clone ${GIT_URL} pet-battle
+				'''
+				dir('pet-battle'){
+
 				script {
 						env.VERSION = sh(returnStdout: true, script: "npm run version --silent").trim()
 						env.PACKAGE = "${APP_NAME}-${VERSION}.tar.gz"
@@ -118,6 +126,7 @@ pipeline {
 						tar -zcvf ${PACKAGE} dist Dockerfile nginx.conf
 						curl -v -f -u ${NEXUS_CREDS} --upload-file ${PACKAGE} http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE}
 				'''
+				}
 			}
 				// Post can be used both on individual stages and for the entire build.
 			post {
@@ -146,13 +155,13 @@ pipeline {
 				sh  '''
 					rm -rf package-contents*
 					curl -v -f -u ${NEXUS_CREDS} http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE} -o ${PACKAGE}
-					# clean up   
+					# clean up
 					oc delete bc/${APP_NAME} is/${APP_NAME} || rc=$?
 				'''
 				echo '### Run OpenShift Build ###'
 				sh '''
 					BUILD_ARGS=" --build-arg git_commit=${GIT_COMMIT} --build-arg git_url=${GIT_URL}  --build-arg build_url=${RUN_DISPLAY_URL} --build-arg build_tag=${BUILD_TAG}"
-					# if we're targeting master branch or main branch push image to external repo, 
+					# if we're targeting master branch or main branch push image to external repo,
 					# if not just use the internal registry
 					if [ ${DEV_BUILD} ]; then
 						echo "🏗 Creating a sandbox build for inside the cluster 🏗"
@@ -175,7 +184,15 @@ pipeline {
 
 		stage("🏗️ Deploy - Helm Package") {
 			agent { label "jenkins-agent-helm" }
+			options {
+				skipDefaultCheckout(true)
+				}
 			steps {
+			  sh '''
+				git clone ${GIT_URL} pet-battle
+				'''
+
+				dir('pet-battle'){
 				echo '### Lint Helm Chart ###'
 				sh '''
 					helm lint chart
@@ -190,12 +207,12 @@ pipeline {
 
 					# over write the chart name for features / sandbox dev
 					yq eval -i .name=\\"${APP_NAME}\\" "chart/Chart.yaml"
-					
+
 					# probs point to the image inside ocp cluster or perhaps an external repo?
 					yq eval -i .image_repository=\\"${IMAGE_REPOSITORY}\\" "chart/values.yaml"
 					yq eval -i .image_name=\\"${APP_NAME}\\" "chart/values.yaml"
 					yq eval -i .image_namespace=\\"${IMAGE_NAMESPACE}\\" "chart/values.yaml"
-					
+
 					# latest built image
 					yq eval -i .image_version=\\"${VERSION}\\" "chart/values.yaml"
 				'''
@@ -206,10 +223,11 @@ pipeline {
 				'''
 				echo '### Publish Helm Chart ###'
 				sh '''
-					# package and release helm chart - could only do this if release candidate only 
+					# package and release helm chart - could only do this if release candidate only
     			helm package --dependency-update chart/  --app-version ${VERSION}
 					curl -v -f -u ${NEXUS_CREDS} http://sonatype-nexus-service:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_HELM}/ --upload-file ${APP_NAME}-*.tgz
 				'''
+				}
 			}
 		}
 
@@ -219,7 +237,7 @@ pipeline {
 				stage("🏖️ Sandbox - Helm Install"){
 					options {
 						skipDefaultCheckout(true)
-					}  
+					}
 					agent { label "jenkins-agent-helm" }
 					when {
 						expression { return !(GIT_BRANCH.startsWith("master") || GIT_BRANCH.startsWith("main") )}
@@ -235,6 +253,9 @@ pipeline {
 				}
 				stage("🧪 TestEnv - ArgoCD Git Commit") {
 					agent { label "jenkins-agent-argocd" }
+					options {
+						skipDefaultCheckout(true)
+						}
 					when {
 						expression { GIT_BRANCH.startsWith("master") || GIT_BRANCH.startsWith("main") }
 					}
@@ -244,7 +265,7 @@ pipeline {
 							git clone https://${GIT_CREDS}@${ARGOCD_CONFIG_REPO} config-repo
 							cd config-repo
 							git checkout ${ARGOCD_CONFIG_REPO_BRANCH} # master or main
-				
+
 							PREVIOUS_VERSION=$(yq eval .applications.pet_battle_test.values.image_version "${ARGOCD_CONFIG_REPO_PATH}")
 							PREVIOUS_CHART_VERSION=$(yq eval .applications.pet_battle_test.source_ref "${ARGOCD_CONFIG_REPO_PATH}")
 
@@ -291,17 +312,17 @@ pipeline {
 		stage("🥾 Trigger System Tests") {
 			options {
 				skipDefaultCheckout(true)
-			}            
+			}
 			agent { label "master" }
 			when {
 				expression { GIT_BRANCH.startsWith("master") || GIT_BRANCH.startsWith("main") }
 			}
 			steps {
-					echo "TODO - Run tests"               
-					build job: "system-tests/main", 
+					echo "TODO - Run tests"
+					build job: "system-tests/main",
 								parameters: [[$class: 'StringParameterValue', name: 'APP_NAME', value: "${APP_NAME}" ],
 															[$class: 'StringParameterValue', name: 'CHART_VERSION', value: "${CHART_VERSION}"],
-															[$class: 'StringParameterValue', name: 'VERSION', value: "${VERSION}"]], 
+															[$class: 'StringParameterValue', name: 'VERSION', value: "${VERSION}"]],
 								wait: false
 			}
 		}
